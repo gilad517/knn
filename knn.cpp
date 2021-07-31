@@ -11,10 +11,11 @@ int main()
 {
 	string fileClassifiedName = "C:\\Users\\gilad\\advanced\\classified.csv";
 	string fileUnclassifiedName = "C:\\Users\\gilad\\advanced\\Unclassified.csv";
-	getIrisArray(fileClassifiedName, true);
-	getIrisArray(fileUnclassifiedName, false);
-	double arr[] = { 1.3,2.4,5.7,3.5,4.7,5.2,6.8,4.6,3.3 };
-
+	Iris* classified = getIrisArray(fileClassifiedName, true);
+	int num = getRowsNum(fileClassifiedName);
+	for (int i = 0; i < num; i++) {
+		cout << classified[i].distanceFrom(Iris()) << endl;
+	}
 }
 
 Iris* getIrisArray(string fileName, bool classified) {
@@ -39,25 +40,24 @@ Iris* getIrisArray(string fileName, bool classified) {
 			}
 			j++;
 		}
-		Iris iris = Iris(properties);
+		irisArray[i].setProperties(properties);
 		if (classified) {
 			if (type.compare("Iris-setosa") == 0) {
-				iris.setType(irisType::Setosa);
+				irisArray[i].setType(irisType::Setosa);
 				break;
 			}
 			if (type.compare("Iris-versicolor") == 0) {
-				iris.setType(irisType::Versicolor);
+				irisArray[i].setType(irisType::Versicolor);
 				break;
 			}
 			if (type.compare("Iris-virginica") == 0) {
-				iris.setType(irisType::Virginica);
+				irisArray[i].setType(irisType::Virginica);
 				break;
 			}
 		}
 		else {
-			iris.setType(irisType::Unknown);
+			irisArray[i].setType(irisType::Unknown);
 		}
-		irisArray[i] = iris;
 	}
 	file.close();
 	return irisArray;
