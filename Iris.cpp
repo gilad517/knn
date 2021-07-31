@@ -1,4 +1,4 @@
-#include "Iris.h"C:\Users\USER\source\repos\MileStone1_31_7\MileStone1_31_7\iris.cpp
+#include "Iris.h"
 
 Iris::Iris(double stemWidth, double stemLength, double petalsWidth, double petalsLength) {
 	m_stemWidth = stemWidth;
@@ -6,6 +6,12 @@ Iris::Iris(double stemWidth, double stemLength, double petalsWidth, double petal
 	m_petalsWidth = petalsWidth;
 	m_petalsLength = petalsLength;
 	m_type = irisType::Unknown;
+}
+Iris::Iris(double properties[4]) {
+	Iris(properties[0], properties[1], properties[2], properties[3]);
+}
+Iris::Iris() {
+	Iris(0, 0, 0, 0);
 }
 double Iris::distanceFrom(Iris iris) {
 	double a = m_stemWidth - iris.m_stemWidth, b = m_stemLength - iris.m_stemLength;
