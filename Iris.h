@@ -10,6 +10,8 @@ private:
 	irisType m_type;
 public:
 	Iris(double stemWidth, double stemLength, double petalsWidth, double petalsLength);
+	Iris(double properties[4]);
+	Iris();
 	double distanceFrom(Iris iris);
 	void setType(irisType type);
 	irisType getType();
