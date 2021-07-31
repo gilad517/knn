@@ -7,6 +7,7 @@ using namespace std;
 double kPlaceInArray(double* arr, int arrSize, int k);
 int getRowsNum(string fileName);
 Iris* getIrisArray(string fileName, bool classified);
+void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified, int classifiedLen, int k);
 int main()
 {
 	//gilad location
@@ -18,13 +19,7 @@ int main()
 	Iris* allClassified = getIrisArray(fileClassifiedName, true);
 	int classifiedNum = getRowsNum(fileClassifiedName), unClassifiedNum = getRowsNum(fileUnclassifiedName);
 	Iris* allUnClassified = getIrisArray(fileUnclassifiedName, false);
-	//checking all irises are good, to delete
-	Iris checkingIris = Iris(0, 0, 0, 0);
-	for (int i = 0; i < classifiedNum; i++)
-	{
-		cout << "iris number " << i<< " distance from 0: "<<checkingIris.distanceFrom(allClassified[i])<<endl;
-	}
-
+	setIrisArray(allUnClassified, unClassifiedNum, allClassified, classifiedNum,7);
 }
 
 Iris* getIrisArray(string fileName, bool classified) {
@@ -49,30 +44,74 @@ Iris* getIrisArray(string fileName, bool classified) {
 			}
 			j++;
 		}
-		Iris iris = Iris(properties);
+		irisArray[i].setProperties(properties);
 		if (classified) {
 			if (type.compare("Iris-setosa") == 0) {
-				iris.setType(irisType::Setosa);
+				irisArray[i].setType(irisType::Setosa);
 				break;
 			}
 			if (type.compare("Iris-versicolor") == 0) {
-				iris.setType(irisType::Versicolor);
+				irisArray[i].setType(irisType::Versicolor);
 				break;
 			}
 			if (type.compare("Iris-virginica") == 0) {
-				iris.setType(irisType::Virginica);
+				irisArray[i].setType(irisType::Virginica);
 				break;
 			}
 		}
 		else {
-			iris.setType(irisType::Unknown);
+			irisArray[i].setType(irisType::Unknown);
 		}
-		irisArray[i] = iris;
 	}
 	file.close();
 	return irisArray;
 }
 
+void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified,int classifiedLen, int k) {
+	for (int i = 0; i < classifiedLen; i++)
+	{
+		double* distances= new double[classifiedLen];
+		for (int j = 0; j < classifiedLen; j++)
+			distances[j] = classified[j].distanceFrom(unClassified[i]);
+		double threshold = kPlaceInArray(distances, classifiedLen, k);
+		int counter1 = 0, counter2 = 0, counter3 = 0;
+		for (int j = 0; j < classifiedLen; j++) {
+			if (classified[j].distanceFrom(unClassified[i]) <= threshold) {
+				irisType type = classified[j].getType();
+				switch (type)
+				{
+				case irisType::Versicolor:
+					counter1++;
+					break;
+				case irisType::Virginica:
+					counter2++;
+					break;
+				case irisType::Setosa:
+					counter3++;
+					break;
+				}
+			}
+		}
+		irisType thisType = irisType::Unknown;
+		if (counter1 > counter2) {
+			if (counter1 > counter3) {
+				thisType = irisType::Versicolor;
+			}
+			else {
+				thisType = irisType::Setosa;
+			}
+		}
+		else {
+			if (counter2 > counter3) {
+				thisType = irisType::Virginica;
+			}
+			else {
+				thisType = irisType::Setosa;
+			}
+		}
+		unClassified[i].setType(thisType);
+	}
+}
 
 int getRowsNum(string fileName) {
 	ifstream file(fileName);
@@ -90,12 +129,15 @@ int getRowsNum(string fileName) {
 }
 
 double kPlaceInArray(double* arr, int arrSize, int k) {
-	for (int i = arrSize; i > 0; i--)
+	bool flag = true;
+	for (int i = arrSize; i > 0 && flag; i--)
 	{
+		flag = false;
 		for (int j = 0; j < i && j < arrSize - 1; j++)
 		{
 			if (arr[j] > arr[j + 1])
 			{
+				flag = true;
 				double temp = arr[j];
 				arr[j] = arr[j + 1];
 				arr[j + 1] = temp;
