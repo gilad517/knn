@@ -34,7 +34,7 @@ Iris* getIrisArray(string fileName, bool classified) {
 			if (j < 4) {
 				properties[j] = stod(prop);
 			}
-			if (j == 5) {
+			if (j == 4) {
 				string type = prop;
 			}
 			j++;
