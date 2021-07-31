@@ -65,17 +65,17 @@ Iris* getIrisArray(string fileName, bool classified) {
 
 
 int getRowsNum(string fileName) {
-	ifstream classified(fileName);
-	if (!classified.is_open()) {
+	ifstream file(fileName);
+	if (!file.is_open()) {
 		exit(-1);
 	}
 	string line;
 	int rowsNum = 0;
-	while (classified.good()) {
-		classified >> line;
+	while (file.good()) {
+		file >> line;
 		rowsNum++;
 	}
-	classified.close();
+	file.close();
 	return rowsNum;
 }
 
