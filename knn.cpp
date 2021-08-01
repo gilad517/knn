@@ -8,18 +8,25 @@ double kPlaceInArray(double* arr, int arrSize, int k);
 int getRowsNum(string fileName);
 Iris* getIrisArray(string fileName, bool classified);
 void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified, int classifiedLen, int k);
+void outputToFile(Iris* unClassified, int unClassifiedLen, string fileName);
 int main()
 {
+	int k = 4;
 	//gilad location
 	//string fileClassifiedName = "C:\\Users\\gilad\\advanced\\classified.csv";
 	//string fileUnclassifiedName = "C:\\Users\\gilad\\advanced\\Unclassified.csv";
+	//string outputPath = "C:\\Users\\gilad\\advanced\\output.csv";
 	//shoshani location, to delete
 	string fileClassifiedName = "C:\\Users\\USER\\Downloads\\classified.csv";
 	string fileUnclassifiedName = "C:\\Users\\USER\\Downloads\\Unclassified.csv";
+	string outputPath = "C:\\Users\\USER\\Downloads\\output.csv";
 	Iris* allClassified = getIrisArray(fileClassifiedName, true);
 	int classifiedNum = getRowsNum(fileClassifiedName), unClassifiedNum = getRowsNum(fileUnclassifiedName);
 	Iris* allUnClassified = getIrisArray(fileUnclassifiedName, false);
-	setIrisArray(allUnClassified, unClassifiedNum, allClassified, classifiedNum,7);
+	setIrisArray(allUnClassified, unClassifiedNum, allClassified, classifiedNum,k);
+	outputToFile(allUnClassified, unClassifiedNum, outputPath);
+	delete[] allClassified;
+	delete[] allUnClassified;
 }
 
 Iris* getIrisArray(string fileName, bool classified) {
@@ -28,9 +35,9 @@ Iris* getIrisArray(string fileName, bool classified) {
 	if (!file.is_open()) {
 		exit(-1);
 	}
-	Iris* irisArray = new Iris[rowsNum]; //to delete
+	Iris* irisArray = new Iris[rowsNum]; // don't forget to delete!
 	for (int i = 0; i < rowsNum && file.good(); i++) {
-		string line, prop, type;
+		string line, prop;
 		file >> line;
 		stringstream splitter(line);
 		double properties[4];
@@ -39,41 +46,34 @@ Iris* getIrisArray(string fileName, bool classified) {
 			if (j < 4) {
 				properties[j] = stod(prop);
 			}
-			if (j == 4) {
-				string type = prop;
+			if (j == 4 && classified) {
+				string type(prop);
+				if (type.compare("Iris-setosa") == 0) {
+					irisArray[i].setType(irisType::Setosa);
+				}
+				if (type.compare("Iris-versicolor") == 0) {
+					irisArray[i].setType(irisType::Versicolor);
+				}
+				if (type.compare("Iris-virginica") == 0) {
+					irisArray[i].setType(irisType::Virginica);
+				}
 			}
 			j++;
 		}
 		irisArray[i].setProperties(properties);
-		if (classified) {
-			if (type.compare("Iris-setosa") == 0) {
-				irisArray[i].setType(irisType::Setosa);
-				break;
-			}
-			if (type.compare("Iris-versicolor") == 0) {
-				irisArray[i].setType(irisType::Versicolor);
-				break;
-			}
-			if (type.compare("Iris-virginica") == 0) {
-				irisArray[i].setType(irisType::Virginica);
-				break;
-			}
-		}
-		else {
-			irisArray[i].setType(irisType::Unknown);
-		}
 	}
 	file.close();
 	return irisArray;
 }
 
 void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified,int classifiedLen, int k) {
-	for (int i = 0; i < classifiedLen; i++)
+	for (int i = 0; i < unClassifiedLen; i++)
 	{
 		double* distances= new double[classifiedLen];
 		for (int j = 0; j < classifiedLen; j++)
 			distances[j] = classified[j].distanceFrom(unClassified[i]);
 		double threshold = kPlaceInArray(distances, classifiedLen, k);
+		cout << threshold<<endl;
 		int counter1 = 0, counter2 = 0, counter3 = 0;
 		for (int j = 0; j < classifiedLen; j++) {
 			if (classified[j].distanceFrom(unClassified[i]) <= threshold) {
@@ -92,6 +92,7 @@ void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified,int 
 				}
 			}
 		}
+		delete[] distances;
 		irisType thisType = irisType::Unknown;
 		if (counter1 > counter2) {
 			if (counter1 > counter3) {
@@ -145,4 +146,26 @@ double kPlaceInArray(double* arr, int arrSize, int k) {
 		}
 	}
 	return arr[k - 1];
+}
+
+void outputToFile(Iris* unClassified, int unClassifiedLen, string fileName) {
+	ofstream output(fileName);
+	for (int i = 0; i < unClassifiedLen; i++)
+	{
+		irisType type = unClassified[i].getType();
+		switch (type)
+		{
+		case irisType::Versicolor:
+			output << "Iris-versicolor";
+			break;
+		case irisType::Virginica:
+			output << "Iris-virginica";
+			break;
+		case irisType::Setosa:
+			output << "Iris-setosa";
+			break;
+		}
+		output << endl;
+	}
+	output.close();
 }
