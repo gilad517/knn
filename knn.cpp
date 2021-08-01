@@ -13,9 +13,7 @@ int main()
 	string fileUnclassifiedName = "C:\\Users\\gilad\\advanced\\Unclassified.csv";
 	Iris* classified = getIrisArray(fileClassifiedName, true);
 	int num = getRowsNum(fileClassifiedName);
-	for (int i = 0; i < num; i++) {
-		cout << classified[i].distanceFrom(Iris()) << endl;
-	}
+	
 }
 
 Iris* getIrisArray(string fileName, bool classified) {
@@ -26,7 +24,7 @@ Iris* getIrisArray(string fileName, bool classified) {
 	}
 	Iris* irisArray = new Iris[rowsNum]; // don't forget to delete!
 	for (int i = 0; i < rowsNum && file.good(); i++) {
-		string line, prop, type;
+		string line, prop;
 		file >> line;
 		stringstream splitter(line);
 		double properties[4];
@@ -35,29 +33,24 @@ Iris* getIrisArray(string fileName, bool classified) {
 			if (j < 4) {
 				properties[j] = stod(prop);
 			}
-			if (j == 4) {
-				string type = prop;
+			if (j == 4 && classified) {
+				string type(prop);
+				if (type.compare("Iris-setosa") == 0) {
+					irisArray[i].setType(irisType::Setosa);
+					continue;
+				}
+				if (type.compare("Iris-versicolor") == 0) {
+					irisArray[i].setType(irisType::Versicolor);
+					continue;
+				}
+				if (type.compare("Iris-virginica") == 0) {
+					irisArray[i].setType(irisType::Virginica);
+					continue;
+				}
 			}
 			j++;
 		}
 		irisArray[i].setProperties(properties);
-		if (classified) {
-			if (type.compare("Iris-setosa") == 0) {
-				irisArray[i].setType(irisType::Setosa);
-				break;
-			}
-			if (type.compare("Iris-versicolor") == 0) {
-				irisArray[i].setType(irisType::Versicolor);
-				break;
-			}
-			if (type.compare("Iris-virginica") == 0) {
-				irisArray[i].setType(irisType::Virginica);
-				break;
-			}
-		}
-		else {
-			irisArray[i].setType(irisType::Unknown);
-		}
 	}
 	file.close();
 	return irisArray;
