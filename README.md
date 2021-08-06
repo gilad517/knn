@@ -3,7 +3,7 @@ k nearest neighbors
 
 to run the program insert the wanted paths of the output file, the classified file
 and the unclassified file as local variables and run the program.
-the classes in the program are Iris class represent the Iris with all it's properties
+the classes in the program are Iris class represents the Iris with all it's properties
 and helpful functions, the knn class has the main function and helpful static functions.
 we implemented the assignment by read and keep all the Iris in the classified and unclassified
 in 2 different allocated arrays, then we sorted the classified array by distance
