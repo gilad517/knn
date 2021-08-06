@@ -1,5 +1,6 @@
 # knn
 k nearest neighbors
+
 to run the program insert the wanted paths of the output file, the classified file
 and the unclassified file as local variables and run the program.
 the classes in the program are Iris class represent the Iris with all it's properties
