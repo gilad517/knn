@@ -37,15 +37,12 @@ Iris* getIrisArray(string fileName, bool classified) {
 				string type(prop);
 				if (type.compare("Iris-setosa") == 0) {
 					irisArray[i].setType(irisType::Setosa);
-					continue;
 				}
 				if (type.compare("Iris-versicolor") == 0) {
 					irisArray[i].setType(irisType::Versicolor);
-					continue;
 				}
 				if (type.compare("Iris-virginica") == 0) {
 					irisArray[i].setType(irisType::Virginica);
-					continue;
 				}
 			}
 			j++;
