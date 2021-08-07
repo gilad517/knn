@@ -4,26 +4,65 @@
 #include "Iris.h"
 
 using namespace std;
+/// <summary>
+/// A function to determain the k'th value of a given array by size.
+/// </summary>
+/// <param name="arr">The given array of the values</param>
+/// <param name="arrSize">The given array's length</param>
+/// <param name="k">The index of the value we want to determain</param>
+/// <returns>The k'th value of the array by size</returns>
 double kPlaceInArray(double* arr, int arrSize, int k);
+
+/// <summary>
+/// A function to determain how many lines are in a given file.
+/// </summary>
+/// <param name="fileName">The given file's path</param>
+/// <returns>The number of lines within the given file</returns>
 int getRowsNum(string fileName);
+
+/// <summary>
+/// A function to extract data about classified/unclassified irises from a known file.
+/// </summary>
+/// <param name="fileName">The path to the irises file</param>
+/// <param name="classified">Whether the irises in the file are classified</param>
+/// <returns>The extracted iris array</returns>
 Iris* getIrisArray(string fileName, bool classified);
+
+/// <summary>
+/// A function to determain the iris types of the given unclassified irises
+/// based on the given classified irises and change them accordingly.
+/// </summary>
+/// <param name="unClassified">A pointer to the unclassified irises array</param>
+/// <param name="unClassifiedLen">The unclassified irises array's length</param>
+/// <param name="classified">A pointer to the classified irises array</param>
+/// <param name="classifiedLen">The classified irises array's length</param>
+/// <param name="k">The number of relevant neighbors </param>
 void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified, int classifiedLen, int k);
+
+/// <summary>
+/// A function to write the types of a known iris array to a file
+/// </summary>
+/// <param name="classified">The known iris array to write</param>
+/// <param name="classifiedLen">The known iris array's length</param>
+/// <param name="filePath">The path of the file we want to write to</param>
 void outputToFile(Iris* unClassified, int unClassifiedLen, string fileName);
+
+/// <summary>
+/// The main function: extracts the data for all the classified irises,
+/// classifies the unclassified irises according to the 5 nearest neighbors,
+/// and then writes the new iris types to a file in a given location.
+/// </summary>
 int main()
 {
-	int k = 4;
-	//gilad location
-	//string fileClassifiedName = "C:\\Users\\gilad\\advanced\\classified.csv";
-	//string fileUnclassifiedName = "C:\\Users\\gilad\\advanced\\Unclassified.csv";
-	//string outputPath = "C:\\Users\\gilad\\advanced\\output.csv";
-	//shoshani location, to delete
-	string fileClassifiedName = "C:\\Users\\USER\\Downloads\\classified.csv";
-	string fileUnclassifiedName = "C:\\Users\\USER\\Downloads\\Unclassified.csv";
+	int k = 5;
+	//please enter the paths to the irises files and the output file.
+	string fileClassifiedPath = "C:\\Users\\USER\\Downloads\\classified.csv";
+	string fileUnclassifiedPath = "C:\\Users\\USER\\Downloads\\Unclassified.csv";
 	string outputPath = "C:\\Users\\USER\\Downloads\\output.csv";
-	Iris* allClassified = getIrisArray(fileClassifiedName, true);
-	int classifiedNum = getRowsNum(fileClassifiedName), unClassifiedNum = getRowsNum(fileUnclassifiedName);
-	Iris* allUnClassified = getIrisArray(fileUnclassifiedName, false);
-	setIrisArray(allUnClassified, unClassifiedNum, allClassified, classifiedNum,k);
+	Iris* allClassified = getIrisArray(fileClassifiedPath, true);
+	int classifiedNum = getRowsNum(fileClassifiedPath), unClassifiedNum = getRowsNum(fileUnclassifiedPath);
+	Iris* allUnClassified = getIrisArray(fileUnclassifiedPath, false);
+	setIrisArray(allUnClassified, unClassifiedNum, allClassified, classifiedNum, k);
 	outputToFile(allUnClassified, unClassifiedNum, outputPath);
 	delete[] allClassified;
 	delete[] allUnClassified;
@@ -66,14 +105,13 @@ Iris* getIrisArray(string fileName, bool classified) {
 	return irisArray;
 }
 
-void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified,int classifiedLen, int k) {
+void setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified, int classifiedLen, int k) {
 	for (int i = 0; i < unClassifiedLen; i++)
 	{
-		double* distances= new double[classifiedLen];
+		double* distances = new double[classifiedLen];
 		for (int j = 0; j < classifiedLen; j++)
 			distances[j] = classified[j].distanceFrom(unClassified[i]);
 		double threshold = kPlaceInArray(distances, classifiedLen, k);
-		cout << threshold<<endl;
 		int counter1 = 0, counter2 = 0, counter3 = 0;
 		for (int j = 0; j < classifiedLen; j++) {
 			if (classified[j].distanceFrom(unClassified[i]) <= threshold) {
@@ -126,10 +164,11 @@ int getRowsNum(string fileName) {
 		rowsNum++;
 	}
 	file.close();
-	return rowsNum;
+	return rowsNum - 1;
 }
 
 double kPlaceInArray(double* arr, int arrSize, int k) {
+	//Using bubble sort to sort the array - with a flag
 	bool flag = true;
 	for (int i = arrSize; i > 0 && flag; i--)
 	{
@@ -148,11 +187,11 @@ double kPlaceInArray(double* arr, int arrSize, int k) {
 	return arr[k - 1];
 }
 
-void outputToFile(Iris* unClassified, int unClassifiedLen, string fileName) {
-	ofstream output(fileName);
-	for (int i = 0; i < unClassifiedLen; i++)
+void outputToFile(Iris* classified, int classifiedLen, string filePath) {
+	ofstream output(filePath);
+	for (int i = 0; i < classifiedLen; i++)
 	{
-		irisType type = unClassified[i].getType();
+		irisType type = classified[i].getType();
 		switch (type)
 		{
 		case irisType::Versicolor:
