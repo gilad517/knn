@@ -56,9 +56,9 @@ int main()
 {
 	int k = 5;
 	//please enter the paths to the irises files and the output file.
-	string fileClassifiedPath = "C:\\Users\\USER\\Downloads\\classified.csv";
-	string fileUnclassifiedPath = "C:\\Users\\USER\\Downloads\\Unclassified.csv";
-	string outputPath = "C:\\Users\\USER\\Downloads\\output.csv";
+	string fileClassifiedPath = "/home/ori777/knn/files/classified.csv";
+	string fileUnclassifiedPath = "/home/ori777/knn/files/Unclassified.csv";
+	string outputPath = "/home/ori777/knn/files/output.csv";
 	Iris* allClassified = getIrisArray(fileClassifiedPath, true);
 	int classifiedNum = getRowsNum(fileClassifiedPath), unClassifiedNum = getRowsNum(fileUnclassifiedPath);
 	Iris* allUnClassified = getIrisArray(fileUnclassifiedPath, false);
@@ -66,6 +66,7 @@ int main()
 	outputToFile(allUnClassified, unClassifiedNum, outputPath);
 	delete[] allClassified;
 	delete[] allUnClassified;
+	std::cout<<"yay!!"<<std::endl;
 }
 
 Iris* getIrisArray(string fileName, bool classified) {
