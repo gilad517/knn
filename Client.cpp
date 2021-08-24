@@ -8,8 +8,6 @@
 
 using namespace std;
 
-void getDataArray(char* data, string unclassifiedPath, string outputPath);
-
 int main() {
     const char* ip_address = "127.0.0.1";
     const int udp_port_no = 5454;
@@ -102,25 +100,4 @@ int main() {
     close(tcp_sock);
     close(udp_sock);
     return 0;
-}
-
-void getDataArray(char* data, string unclassifiedPath, string outputPath) {
-    int n = unclassifiedPath.length();
-    char dataUnclassifiedPath[n + 1];
-    strcpy(dataUnclassifiedPath, unclassifiedPath.c_str());
-    int k = outputPath.length();
-        char dataOutputPath[k + 1];
-        strcpy(dataOutputPath, outputPath.c_str());
-        char dataToSend[n + k + 2];
-        for (int i = 0; i < n; i++) {
-            dataToSend[i] = dataUnclassifiedPath[i];
-        }
-        dataToSend[n] = ' ';
-        for (int i = n + 1; i < n + k + 1; i++) {
-            dataToSend[i] = dataOutputPath[i - n - 1];
-        }
-        dataToSend[n + k + 1] = '\0';
-        for (int i = 0; i < sizeof(dataToSend); i++) {
-            data[i] = dataToSend[i];
-        }
 }
