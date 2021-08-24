@@ -11,17 +11,15 @@ using namespace std;
 void getDataArray(char* data, string unclassifiedPath, string outputPath);
 
 int main() {
-    cout << "tcp server status: " << "not ready" << endl;
-    cout << "udp server status: " << "not ready" << endl;
-    
     const char* ip_address = "127.0.0.1";
-    const int udp_port_no = 5555;
-    const int tcp_port_no = 6666;
+    const int udp_port_no = 5454;
+    const int tcp_port_no = 4444;
 
     struct sockaddr_in sin;
     int tcp_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (tcp_sock < 0) {
-        perror("error creating socket");
+        perror("error creating tcp socket");
+        return 1;
     }
 
     memset(&sin, 0, sizeof(sin));
@@ -30,14 +28,17 @@ int main() {
     sin.sin_port = htons(tcp_port_no);
 
     if (connect(tcp_sock, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
-        perror("error connecting to server");
+        perror("error connecting to tcp server");
+        return 1;
     }
 
     cout << "tcp server status: " << "ready" << endl;
 
+
     int udp_sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (udp_sock < 0) {
-        perror("error creating socket");
+        perror("error creating udp socket");
+        return 1;
     }
 
     memset(&sin, 0, sizeof(sin));
@@ -50,7 +51,8 @@ int main() {
 
     int sent_bytes = sendto(udp_sock, message, message_len, 0, (struct sockaddr *) &sin, sizeof(sin));
     if (sent_bytes < 0) {
-        perror("error writing to socket");
+        perror("error writing to udp socket");
+        return 1;
     }
 
     struct sockaddr_in from;
@@ -58,29 +60,36 @@ int main() {
     char buffer[4096];
     int bytes = recvfrom(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &from, &from_len);
     if (bytes < 0) {
-        perror("error reading from socket");
+        perror("error reading from udp socket");
+        return 1;
     }
-
-    cout << "udp server status: " << buffer << endl;
-
+    string received(buffer);
+    if(received.compare("ready") == 0){
+        cout << "udp server status: ready" << endl;
+    } else {
+        cout<< "udp server status: not ready" <<endl;
+        cout<< "was sent " << received<<endl;
+    }
+    
     string protocol, unClassifiedPath, outputPath;
     cout<<"enter protocol, unclassified path, output path: ";
     cin>>protocol>>unClassifiedPath>>outputPath;
-    char* data;
-    getDataArray(data, unClassifiedPath, outputPath);
-    char dataToSend[strlen(data) + 1];
-    for (int i = 0; i < strlen(data) + 1; i++) {
-        dataToSend[i] = data[i];
-    }
-    int dataLen = sizeof(dataToSend);
+    string stringDataToSend = unClassifiedPath + " " + outputPath;
+    char* dataToSend(&stringDataToSend[0]);
+    int dataLen = strlen(dataToSend);
     while (true) {
         if (protocol.compare("UDP") == 0) {
             int sent_bytes = sendto(udp_sock, dataToSend, dataLen, 0, (struct sockaddr *) &sin, sizeof(sin));
+            if (sent_bytes < 0) {
+                perror("error writing to udp server");
+                return 1;
+            }
             break;
         } else if (protocol.compare("TCP") == 0) {
             int sent_bytes = send(tcp_sock, dataToSend, dataLen, 0);
             if (sent_bytes < 0) {
-            perror("error writing to server");
+                perror("error writing to tcp server");
+                return 1;
             }
             break;
         } else {
