@@ -32,4 +32,4 @@ read the input from user (cin>>), then, according to the given protocol, we sent
 to classify the unclassified file we got from the user to the output file the user inserted using the classifier class,
 and finally(after classifying the wanted file and after the server printed "classified successfully"),
 we closed both sockets on the client side(each was meant to sent a query to its server).  
-both servers still remain, waiting for their next client.
+Both servers still remain, patiently waiting for their next client.
