@@ -3,6 +3,10 @@
 #include <fstream>
 #include <sstream>
 #include "Iris.h"
+
+/// <summary>
+/// The Classifier class is used to initialize an Iris classifier and classify an unclassified Iris file with it.
+/// </summary>
 class Classifier {
 private:
 	Iris* m_classifiedIrisArray;

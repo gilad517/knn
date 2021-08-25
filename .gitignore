@@ -34,3 +34,9 @@
 
 .vs/**
 Debug/**
+
+#build files
+/build
+
+#vscode files
+/.vscode
