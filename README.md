@@ -1,18 +1,18 @@
 # knn
-k nearest neighbors
+k nearest neighbors, server client.
 
-to run the program insert the wanted paths of the output file, the classified file
-and the unclassified file as local variables and run the program.
+to run the program insert the wanted paths of the classified file
+as local variables at both udp and tcp servers, compile and run both servers.
+compile and run the client program.
+
 The classes in the program are: Iris class which represents the Iris with all it's properties
-and helpful functions, the knn class has the main function and helpful static functions.
-We implemented the assignment by reading and keeping all the Irises in the classified and unclassified
-allocated arrays, then we sorted the classified array by distance to the current unclassified
-Iris(we in fact sorted by the squared distance in an equal fashion), got the k'th distance value, then counted how many of
-each Iris type are closer to the Iris than the k'th distance, then we classified the unclassified
-Iris by the majority of the neighbors type. we did the same proccess to all the
-unclassified Iris array, we then wrote the output file by the same order of the array(the original order).
+and helpful functions, the classifier class which classify the unclassified Iris file, gets the classified file path in the constructor
+and the unclassified and output file path plus the k (in the knn) in the classify function which classifiy the unclassified file
+to the output file according to the given k, the udp and tcp server which is a server, when gets query from the client (in udp or tcp protocol)
+classify the given unclassified file in the given output file, the client which get input of protocol, unclassified file to classify the output file
+from user, send request to one of the servers (depends on the wanted protocol) to classify the unclassified file.
 
-p.s: for us to work together on the same code, we created a different branch for
-each of us, that way we could upload the code without interruption and conflicts.
-then when we agreed on the code, one of us would upload the code to the main
-branch and solve the conficts as we agreed.
+We implemented the assignment by connect the client to the tcp server, and send a message to the udp server (we wanted him to have the client's adress
+for us to get connection approvel), sent connection approvel from both servers and read the input from user (cin>>), then, according to the wanted protocol, we sent
+a query for the server to classify the unclassified file we got from user to the output file the user inserted using the classifier class,
+closed both sockets (on client side, each was meant to sent the query to different server) and both servers remains, waits for their next client.
