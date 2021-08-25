@@ -1,18 +1,35 @@
-# knn
+# knn, server client
 k nearest neighbors, server client.
 
 to run the program insert the wanted paths of the classified file
-as local variables at both udp and tcp servers, compile and run both servers.
-compile and run the client program.
+as local variables at both udp and tcp servers, compile and run both servers(see "compiling and running").
+compile and run the client program(see "compiling and running").
+
+compiling and running: to compile either use the CMakeLists.txt file we provided or enter the following lines to the terminal:
+g++ UdpServer.cpp Classifier.cpp Iris.cpp -o UdpServer.out
+g++ TcpServer.cpp Classifier.cpp Iris.cpp -o TcpServer.out
+g++ Client.cpp -o Client.out
+when using provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):
+./TcpServer
+./UdpServer
+./Client
+otherwise, use these commands to run(in that order, each in a different terminal - use split):
+./TcpServer.out
+./UdpServer.out
+./Client.out
 
 The classes in the program are: Iris class which represents the Iris with all it's properties
-and helpful functions, the classifier class which classify the unclassified Iris file, gets the classified file path in the constructor
-and the unclassified and output file path plus the k (in the knn) in the classify function which classifiy the unclassified file
-to the output file according to the given k, the udp and tcp server which is a server, when gets query from the client (in udp or tcp protocol)
-classify the given unclassified file in the given output file, the client which get input of protocol, unclassified file to classify the output file
-from user, send request to one of the servers (depends on the wanted protocol) to classify the unclassified file.
+and helpful functions, the classifier class which classifies the unclassified Iris file, gets the classified file path in the constructor
+and the unclassified and output file paths plus the k (from the knn) in the classify function which classifies the unclassified file
+to the output file according to the given k.
+The udp and tcp servers get a query from the client (in udp or tcp protocol) and classify the given unclassified file to the given output file,
+the client receives from the user an input of protocol(TCP or UDP), and then the paths of the unclassified file to classify and the output file,
+it then sends a request to one of the servers (depending on the given protocol) to classify the unclassified file to the output file.
 
-We implemented the assignment by connect the client to the tcp server, and send a message to the udp server (we wanted him to have the client's adress
-for us to get connection approvel), sent connection approvel from both servers and read the input from user (cin>>), then, according to the wanted protocol, we sent
-a query for the server to classify the unclassified file we got from user to the output file the user inserted using the classifier class,
-closed both sockets (on client side, each was meant to sent the query to different server) and both servers remains, waits for their next client.
+We implemented the assignment by first connecting the client to the tcp server, and sending a message to the udp server (we wanted it to have the client's adress
+for us to get connection approvel) and after making sure the servers are up(by connecting to the tcp server and getting a message from the udp server),
+read the input from user (cin>>), then, according to the given protocol, we sent a query for the corresponding server
+to classify the unclassified file we got from the user to the output file the user inserted using the classifier class,
+and finally(after classifying the wanted file and after the server printed "classified successfully"),
+we closed both sockets on the client side(each was meant to sent a query to its server).
+both servers still remain, waiting for their next client.
