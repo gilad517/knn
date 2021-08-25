@@ -9,14 +9,16 @@ compiling and running: to compile either use the CMakeLists.txt file we provided
 g++ TcpServer.cpp Classifier.cpp Iris.cpp -o TcpServer.out  
 g++ UdpServer.cpp Classifier.cpp Iris.cpp -o UdpServer.out  
 g++ Client.cpp -o Client.out  
-when using provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use a terminal multiplexer, and have your working directory be "build"):  
+when using provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):  
 ./TcpServer  
 ./UdpServer  
 ./Client  
-otherwise, use these commands to run(in that order, each in a different terminal - use split, which in VsCode is a + on the top right of the terminal window):  
+otherwise, use these commands to run(in that order, each in a different terminal - use split):  
 ./TcpServer.out  
 ./UdpServer.out  
 ./Client.out  
+
+Splitting the terminal can either be achieved by a terminal multiplexer or in VsCode using the + on the top right of the terminal window.
 
 The classes in the program are: Iris class which represents the Iris with all it's properties
 and helpful functions, the classifier class which classifies the unclassified Iris file, gets the classified file path in the constructor
