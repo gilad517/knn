@@ -6,8 +6,8 @@ as local variables at both udp and tcp servers, compile and run both servers(see
 compile and run the client program(see "compiling and running").
 
 compiling and running: to compile either use the CMakeLists.txt file we provided or enter the following lines to the terminal:  
-g++ UdpServer.cpp Classifier.cpp Iris.cpp -o UdpServer.out  
 g++ TcpServer.cpp Classifier.cpp Iris.cpp -o TcpServer.out  
+g++ UdpServer.cpp Classifier.cpp Iris.cpp -o UdpServer.out  
 g++ Client.cpp -o Client.out  
 when using provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):  
 ./TcpServer  
