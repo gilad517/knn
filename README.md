@@ -31,7 +31,7 @@ it then sends a request to one of the servers (depending on the given protocol) 
 We implemented the assignment by first connecting the client to the tcp server, and sending a message to the udp server (we wanted it to have the client's adress
 for us to get connection approvel) and after making sure the servers are up(by connecting to the tcp server and getting a message from the udp server),
 read the input from user (cin>>), then, according to the given protocol, we sent a query for the corresponding server
-to classify the unclassified file we got from the user to the output file the user inserted using the classifier class,
+to classify the unclassified file we got from the user to the output file the user inserted using the classifier class from milestone 1,
 and finally(after classifying the wanted file and after the server printed "classified successfully"),
 we closed both sockets on the client side(each was meant to sent a query to its server).  
 Both servers still remain, patiently waiting for their next client.
