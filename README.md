@@ -10,6 +10,7 @@ g++ UdpServer.cpp Classifier.cpp Iris.cpp -o UdpServer.out
 g++ TcpServer.cpp Classifier.cpp Iris.cpp -o TcpServer.out
 g++ Client.cpp -o Client.out
 when using provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):
+
 ./TcpServer
 ./UdpServer
 ./Client
