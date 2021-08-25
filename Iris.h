@@ -1,4 +1,7 @@
 #pragma once
+/// <summary>
+/// The Iris class represents a simple Iris.
+/// </summary>
 enum class irisType { Versicolor, Virginica, Setosa, Unknown };
 class Iris
 {
