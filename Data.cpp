@@ -50,7 +50,7 @@ double Data::distanceFrom(Data data, DistanceMetric metric) {
 		}
 		return result;
 	}
-	
+	return 0;
 }
 
 void Data::setType(std::string type) {

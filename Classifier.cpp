@@ -143,22 +143,25 @@ void Classifier::Classify(string unClassifiedPath)
 	m_classifiedDataFromUnclassified = getDataArray(unClassifiedPath, false);
 	setDataArray();
 }
-void Classifier::displayResults() {
+string Classifier::displayResults() {
 	if (m_classifiedDataFromUnclassified == nullptr) {
-		cout << "classifiy first" << endl;
+		return "classifiy first\n";
 	} else {
+		string result = "";
 		for (int i = 0; i < currentUnclassifiedLen; i++) {
-			cout << i + 1 << "\t" << m_classifiedDataFromUnclassified[i].getType() << endl;
+			result += to_string(i + 1) + "\t" + m_classifiedDataFromUnclassified[i].getType() + "\n";
 		}
-		cout << "Done." << endl;
+		result += "Done.\n";
+		return result;
 	}
 }
 
-void Classifier::downloadResults(string filePath) {
+string Classifier::downloadResults(string filePath) {
 	if (m_classifiedDataFromUnclassified == nullptr) {
-		cout << "classifiy first" << endl;
+		return "classifiy first\n";
 	} else {
 		outputToFile(m_classifiedDataFromUnclassified, currentUnclassifiedLen, filePath);
+		return "completed\n";
 	}
 }
 

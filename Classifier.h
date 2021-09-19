@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -59,6 +58,6 @@ public:
 	void Classify(std::string unClassifiedPath);
 	void setK(int k);
 	void setMetric(DistanceMetric metric);
-	void displayResults();
-	void downloadResults(std::string filePath);
+	std::string displayResults();
+	std::string downloadResults(std::string filePath);
 };

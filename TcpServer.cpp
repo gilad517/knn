@@ -69,9 +69,10 @@ int main() {
                 int spacePlace(stringMsg.find(' '));
                 string unclassified(stringMsg.substr(0,spacePlace)), output(stringMsg.substr(spacePlace+1, stringMsg.length()));
                 cls.Classify(unclassified);
-                cls.downloadResults(output);
-                cls.displayResults();
+                cout << cls.downloadResults(output);
+                cout << cls.displayResults();
                 cout<<"classified successfully"<<endl;
+                break;
             }
         }
         if (listenReturned < 0) {
