@@ -1,9 +1,35 @@
 #include "Classifier.h"
+#include <map>
 using namespace std;
 
 
-
-
+string getEntryWithLargestValue(map<string, int> m)
+{
+  
+    // Reference variable to help find
+    // the entry with the highest value
+    pair<string, int> entryWithMaxValue = make_pair("", 0);
+  
+    // Iterate in the map to find the required entry
+    map<string, int>::iterator currentEntry;
+    for (currentEntry = m.begin(); currentEntry != m.end(); ++currentEntry) {
+  
+        // If this entry's value is more
+        // than the max value
+        // Set this entry as the max
+        if (currentEntry->second > entryWithMaxValue.second) {
+  
+            entryWithMaxValue = make_pair(currentEntry->first, currentEntry->second);
+        }
+    }
+  
+    return entryWithMaxValue.first;
+}
+bool is_double(const std::string& s)
+{
+    double ld;
+    return((std::istringstream(s) >> ld >> std::ws).eof());
+}
 int Classifier::getRowsNum(string fileName) {
 	ifstream file(fileName);
 	if (!file.is_open()) {
@@ -19,45 +45,36 @@ int Classifier::getRowsNum(string fileName) {
 	return rowsNum - 1;
 }
 
-Iris* Classifier::getIrisArray(string fileName, bool classified) {
+Data* Classifier::getDataArray(string fileName, bool classified) {
 	int rowsNum = getRowsNum(fileName);
 	ifstream file(fileName);
 	if (!file.is_open()) {
 		exit(-1);
 	}
-	Iris* irisArray = new Iris[rowsNum];
+	Data* DataArray = new Data[rowsNum];
 	for (int i = 0; i < rowsNum && file.good(); i++) {
 		string line, prop;
 		file >> line;
 		stringstream splitter(line);
-		double properties[4];
+		double properties[10];
 		int j = 0;
 		while (getline(splitter, prop, ',')) {
-			if (j < 4) {
+			if (is_double(prop)) {
 				properties[j] = stod(prop);
-			}
-			if (j == 4 && classified) {
-				string type(prop);
-				if (type.compare("Iris-setosa") == 0) {
-					irisArray[i].setType(irisType::Setosa);
-				}
-				if (type.compare("Iris-versicolor") == 0) {
-					irisArray[i].setType(irisType::Versicolor);
-				}
-				if (type.compare("Iris-virginica") == 0) {
-					irisArray[i].setType(irisType::Virginica);
-				}
+			} else if (classified) {
+				DataArray[i].setType(prop);
 			}
 			j++;
 		}
-		irisArray[i].setProperties(properties);
+		DataArray[i].setProperties(properties);
 	}
 	file.close();
-	return irisArray;
+	return DataArray;
 }
 
-double Classifier::kPlaceInArray(double* arr, int arrSize, int k) {
+double Classifier::kPlaceInArray(double* arr, int arrSize) {
 	//Using bubble sort to sort the array - with a flag
+
 	bool flag = true;
 	for (int i = arrSize; i > 0 && flag; i--)
 	{
@@ -76,91 +93,80 @@ double Classifier::kPlaceInArray(double* arr, int arrSize, int k) {
 	return arr[k - 1];
 }
 
-void Classifier::setIrisArray(Iris* unClassified, int unClassifiedLen, Iris* classified, int classifiedLen, int k) {
-	for (int i = 0; i < unClassifiedLen; i++)
+void Classifier::setDataArray() {
+	for (int i = 0; i < currentUnclassifiedLen; i++)
 	{
-		double* distances = new double[classifiedLen];
-		for (int j = 0; j < classifiedLen; j++)
-			distances[j] = classified[j].distanceFrom(unClassified[i]);
-		double threshold = kPlaceInArray(distances, classifiedLen, k);
-		int counter1 = 0, counter2 = 0, counter3 = 0;
-		for (int j = 0; j < classifiedLen; j++) {
-			if (classified[j].distanceFrom(unClassified[i]) <= threshold) {
-				irisType type = classified[j].getType();
-				switch (type)
-				{
-				case irisType::Versicolor:
-					counter1++;
-					break;
-				case irisType::Virginica:
-					counter2++;
-					break;
-				case irisType::Setosa:
-					counter3++;
-					break;
-				}
+		double* distances = new double[m_classifiedNum];
+		for (int j = 0; j < m_classifiedNum; j++)
+			distances[j] = m_classifiedDataArray[j].distanceFrom(m_classifiedDataFromUnclassified[i], metric);
+		double threshold = kPlaceInArray(distances, m_classifiedNum);
+		map<string, int> typeCounter;
+		for (int j = 0; j < m_classifiedNum; j++) {
+			if (m_classifiedDataArray[j].distanceFrom(m_classifiedDataFromUnclassified[i], metric) <= threshold) {
+				string type = m_classifiedDataArray[j].getType();
+				typeCounter[type]++;
 			}
 		}
 		delete[] distances;
-		irisType thisType = irisType::Unknown;
-		if (counter1 > counter2) {
-			if (counter1 > counter3) {
-				thisType = irisType::Versicolor;
-			}
-			else {
-				thisType = irisType::Setosa;
-			}
-		}
-		else {
-			if (counter2 > counter3) {
-				thisType = irisType::Virginica;
-			}
-			else {
-				thisType = irisType::Setosa;
-			}
-		}
-		unClassified[i].setType(thisType);
+		m_classifiedDataFromUnclassified[i].setType(getEntryWithLargestValue(typeCounter));
 	}
 }
 
-void Classifier::outputToFile(Iris* classified, int classifiedLen, string filePath) {
+void Classifier::outputToFile(Data* classified, int classifiedLen, string filePath) {
 	ofstream output(filePath);
 	for (int i = 0; i < classifiedLen; i++)
 	{
-		irisType type = classified[i].getType();
-		switch (type)
-		{
-		case irisType::Versicolor:
-			output << "Iris-versicolor";
-			break;
-		case irisType::Virginica:
-			output << "Iris-virginica";
-			break;
-		case irisType::Setosa:
-			output << "Iris-setosa";
-			break;
-		}
-		output << endl;
+		output << classified[i].getType() << endl;
 	}
 	output.close();
 }
 
 Classifier::Classifier(string classifiedPath)
 {
-	m_classifiedIrisArray = getIrisArray(classifiedPath, true);
+	m_classifiedDataArray = getDataArray(classifiedPath, true);
 	m_classifiedNum = getRowsNum(classifiedPath);
+	metric = DistanceMetric::EUC;
+	k = 5;
+	m_classifiedDataFromUnclassified = nullptr;
 }
 
 Classifier::~Classifier()
 {
-	delete[] m_classifiedIrisArray;
+	delete[] m_classifiedDataArray;
+	delete[] m_classifiedDataFromUnclassified;
 }
 
-void Classifier::Classify(string unClassifiedPath, string outputPath, int k)
+void Classifier::Classify(string unClassifiedPath)
 {
-	int unClassifiedNum = getRowsNum(unClassifiedPath);
-	Iris* allUnClassified = getIrisArray(unClassifiedPath, false);
-	setIrisArray(allUnClassified, unClassifiedNum, m_classifiedIrisArray, m_classifiedNum, k);
-	outputToFile(allUnClassified, unClassifiedNum, outputPath);
-	delete[] allUnClassified;
+	delete[] m_classifiedDataFromUnclassified;
+	currentUnclassifiedLen = getRowsNum(unClassifiedPath);
+	m_classifiedDataFromUnclassified = getDataArray(unClassifiedPath, false);
+	setDataArray();
 }
+void Classifier::displayResults() {
+	if (m_classifiedDataFromUnclassified == nullptr) {
+		cout << "classifiy first" << endl;
+	} else {
+		for (int i = 0; i < currentUnclassifiedLen; i++) {
+			cout << i + 1 << "\t" << m_classifiedDataFromUnclassified[i].getType() << endl;
+		}
+		cout << "Done." << endl;
+	}
+}
+
+void Classifier::downloadResults(string filePath) {
+	if (m_classifiedDataFromUnclassified == nullptr) {
+		cout << "classifiy first" << endl;
+	} else {
+		outputToFile(m_classifiedDataFromUnclassified, currentUnclassifiedLen, filePath);
+	}
+}
+
+void Classifier::setK(int k) {
+	this->k = k;
+}
+
+void Classifier::setMetric(DistanceMetric metric) {
+	this->metric = metric;
+}
+
