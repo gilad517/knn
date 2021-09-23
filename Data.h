@@ -7,17 +7,17 @@ enum class DistanceMetric { EUC, MAN, CHE };
 class Data
 {
 private:
-	//The Data' qualities
+	//The Data's qualities
 	double m_properties[10];
-	//The Data' type
+	//The Data's type
 	std::string m_type;
 public:
-	//The Data' constructors
+	//The Data's constructors
 	Data(double properties[10]);
 	Data();
 
 	/// <summary>
-	/// A basic set method for the Data' attributes
+	/// A basic set method for the Data's attributes
 	/// </summary>
 	/// <param name="properties">
 	/// An array of the new Data properties (stem width, length and then petals width, length)
@@ -25,15 +25,15 @@ public:
 	void setProperties(double properties[10]);
 
 	/// <summary>
-	///  A basic set method for the Data' type attribute
+	///  A basic set method for the Data's type attribute
 	/// </summary>
-	/// <param name="type">The new Data' type attribute</param>
+	/// <param name="type">The new Data's type attribute</param>
 	void setType(std::string type);
 
 	/// <summary>
-	/// A basic get method for the Data' type attribute
+	/// A basic get method for the Data's type attribute
 	/// </summary>
-	/// <returns>The current Data' type attribute</returns>
+	/// <returns>The current Data's type attribute</returns>
 	std::string getType();
 
 	/// <summary>

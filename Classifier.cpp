@@ -1,5 +1,6 @@
 #include "Classifier.h"
 #include <map>
+#include <vector>
 using namespace std;
 
 
@@ -25,15 +26,17 @@ string getEntryWithLargestValue(map<string, int> m)
   
     return entryWithMaxValue.first;
 }
+
 bool is_double(const std::string& s)
 {
     double ld;
     return((std::istringstream(s) >> ld >> std::ws).eof());
 }
+
 int Classifier::getRowsNum(string fileName) {
 	ifstream file(fileName);
 	if (!file.is_open()) {
-		exit(-7);
+		exit(-1);
 	}
 	string line;
 	int rowsNum = 0;
@@ -57,6 +60,10 @@ Data* Classifier::getDataArray(string fileName, bool classified) {
 		file >> line;
 		stringstream splitter(line);
 		double properties[10];
+		for (size_t j = 0; j < 10; j++)
+		{
+			properties[j] = 0;
+		}
 		int j = 0;
 		while (getline(splitter, prop, ',')) {
 			if (is_double(prop)) {
@@ -121,28 +128,43 @@ void Classifier::outputToFile(Data* classified, int classifiedLen, string filePa
 	output.close();
 }
 
+Classifier::Classifier()
+{
+	m_classifiedDataArray = nullptr;
+	m_classifiedNum = 0;
+	m_classifiedDataFromUnclassified = nullptr;
+	currentUnclassifiedLen = 0;
+	m_providedTypes = nullptr;
+	//Defualt values.
+	metric = DistanceMetric::EUC;
+	k = 5;
+}
+
 Classifier::Classifier(string classifiedPath)
 {
 	m_classifiedDataArray = getDataArray(classifiedPath, true);
 	m_classifiedNum = getRowsNum(classifiedPath);
+	m_classifiedDataFromUnclassified = nullptr;
+	currentUnclassifiedLen = 0;
+	m_providedTypes = nullptr;
+	//Defualt values.
 	metric = DistanceMetric::EUC;
 	k = 5;
-	m_classifiedDataFromUnclassified = nullptr;
+}
+
+void Classifier::initialize(string classifiedPath) {
+	delete[] m_classifiedDataArray;
+	m_classifiedDataArray = getDataArray(classifiedPath, true);
+	m_classifiedNum = getRowsNum(classifiedPath);
 }
 
 Classifier::~Classifier()
 {
 	delete[] m_classifiedDataArray;
 	delete[] m_classifiedDataFromUnclassified;
+	delete[] m_providedTypes;
 }
 
-void Classifier::Classify(string unClassifiedPath)
-{
-	delete[] m_classifiedDataFromUnclassified;
-	currentUnclassifiedLen = getRowsNum(unClassifiedPath);
-	m_classifiedDataFromUnclassified = getDataArray(unClassifiedPath, false);
-	setDataArray();
-}
 string Classifier::displayResults() {
 	if (m_classifiedDataFromUnclassified == nullptr) {
 		return "classifiy first\n";
@@ -171,5 +193,102 @@ void Classifier::setK(int k) {
 
 void Classifier::setMetric(DistanceMetric metric) {
 	this->metric = metric;
+}
+
+void Classifier::setProvidedTypes(string testPath){
+	int rowsNum = getRowsNum(testPath);
+	ifstream file(testPath);
+	if (!file.is_open()) {
+		exit(-1);
+	}
+	m_providedTypes = new string[rowsNum];
+	for (int i = 0; i < rowsNum && file.good(); i++) {
+		string line, prop;
+		file >> line;
+		stringstream splitter(line);
+		double properties[10];
+		int j = 0;
+		while (getline(splitter, prop, ',')) {
+			if (!is_double(prop)) {
+				m_providedTypes[j] = prop;
+			}
+			j++;
+		}
+	}
+	file.close();
+}
+
+void Classifier::addTest(string testPath){
+	delete[] m_classifiedDataFromUnclassified;
+	delete[] m_providedTypes;
+	currentUnclassifiedLen = getRowsNum(testPath);
+	m_classifiedDataFromUnclassified = getDataArray(testPath, false);
+	setProvidedTypes(testPath);
+}
+
+int Classifier::getK() {
+	return k;
+}
+
+DistanceMetric Classifier::getMetric() {
+	return metric;
+}
+
+string Classifier::getConfusionMatrix(){
+	string matrix = "";
+	vector<string> allTypes;
+	//adding all possible types.
+	for (size_t i = 0; i < m_classifiedNum; i++)
+	{
+		bool inTheVector = false;
+		for (size_t j = 0; j < allTypes.size() && (!inTheVector); j++)
+		{
+			if(m_classifiedDataArray[i].getType().compare(allTypes[j]) == 0) {
+				inTheVector = true;
+			}
+		}
+		if(!inTheVector) {
+			allTypes.push_back(m_classifiedDataArray[i].getType());
+		}
+	}
+	map<string,double> trueAppearances;
+	for (size_t i = 0; i < allTypes.size(); i++)
+	{
+		trueAppearances[allTypes[i]]=0;
+	}
+	for (size_t i = 0; i < currentUnclassifiedLen; i++)
+	{
+		trueAppearances[m_providedTypes[i]]+=1;
+	}
+	for (size_t i = 0; i < allTypes.size(); i++)
+	{
+		matrix+=allTypes[i];
+		for (size_t j = 0; j < allTypes.size(); j++)
+		{
+			int countPredicted(0);
+			for (size_t k = 0; k < currentUnclassifiedLen; k++)
+			{
+				if (m_providedTypes[k].compare(allTypes[i])==0) {
+					if (m_classifiedDataFromUnclassified[k].getType().compare(allTypes[j])==0) {
+						countPredicted++;
+					}
+				}
+			}
+			matrix+="\t"+to_string(100*(countPredicted/trueAppearances[allTypes[i]]))+"%";
+		}
+		matrix+="\n";
+	}
+	matrix += "The current KNN parameters are: K = ";
+	matrix+=to_string(getK());
+	matrix+=", distance metric = ";
+	DistanceMetric metric = getMetric();
+	if(metric == DistanceMetric::EUC) {
+		matrix+="EUC";
+	} else if(metric == DistanceMetric::CHE) {
+		matrix+="CHE";
+	} else{
+		matrix+="MAN";
+	}
+	return matrix;
 }
 

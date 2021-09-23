@@ -1,9 +1,6 @@
 #include "Data.h"
 Data::Data(double properties[10]) {
 	for (int i = 0; i < 10; i++) {
-		m_properties[i] = 0;
-	}
-	for (int i = 0; i < 10; i++) {
 		m_properties[i] = properties[i];
 	}
 	m_type = "";
