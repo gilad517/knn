@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "Command.hpp"
+#include "Command.h"
 using namespace std;
 
 class UploadCommand : public Command{

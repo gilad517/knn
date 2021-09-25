@@ -173,7 +173,7 @@ string Classifier::displayResults() {
 		for (int i = 0; i < currentUnclassifiedLen; i++) {
 			result += to_string(i + 1) + "\t" + m_classifiedDataFromUnclassified[i].getType() + "\n";
 		}
-		result += "Done.\n";
+		result += "Done.";
 		return result;
 	}
 }
@@ -206,13 +206,10 @@ void Classifier::setProvidedTypes(string testPath){
 		string line, prop;
 		file >> line;
 		stringstream splitter(line);
-		double properties[10];
-		int j = 0;
 		while (getline(splitter, prop, ',')) {
 			if (!is_double(prop)) {
-				m_providedTypes[j] = prop;
+				m_providedTypes[i] = prop;
 			}
-			j++;
 		}
 	}
 	file.close();

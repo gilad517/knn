@@ -1,4 +1,4 @@
-#include "ClassifyingCommand.hpp"
+#include "ClassifyingCommand.h"
 
 ClassifyingCommand::ClassifyingCommand(DefaultIO* thisIO) {
     m_dio = thisIO;

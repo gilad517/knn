@@ -1,4 +1,4 @@
-#include "SettingsCommand.hpp"
+#include "SettingsCommand.h"
 
 
 bool isInteger(string str) {
@@ -30,6 +30,9 @@ void SettingsCommand::execute() {
     do
     {
         string input(m_dio->read());
+        if(input.empty()) {
+            return;
+        }
         size_t spacePlace = input.find(' ');
         if(spacePlace == string::npos) {
             isValid = false;

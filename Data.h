@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 /// <summary>
 /// The Data class represents a simple Data.
 /// </summary>

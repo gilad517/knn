@@ -1,4 +1,4 @@
-#include "ConfusionMatrixCommand.hpp"
+#include "ConfusionMatrixCommand.h"
 #include "../Classifier.h"
 
 ConfusionMatrixCommand::ConfusionMatrixCommand(DefaultIO* thisIO) {
@@ -12,5 +12,5 @@ void ConfusionMatrixCommand::execute() {
     do
     {
         emptyLine = m_dio->read();
-    } while (emptyLine.compare("")!=0);
+    } while (!emptyLine.empty());
 }

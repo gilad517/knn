@@ -1,4 +1,4 @@
-#include "UploadCommand.hpp"
+#include "UploadCommand.h"
 
 UploadCommand::UploadCommand(DefaultIO* thisIO) {
     m_dio = thisIO;

@@ -1,11 +1,11 @@
 #include <iostream>
-#include "StandardIO.hpp"
+#include "StandardIO.h"
 using namespace std;
 
 
 string StandardIO::read() {
     string msg;
-    cin>>msg;
+    getline(cin, msg);
     return msg;
 }
 

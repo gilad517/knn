@@ -1,4 +1,4 @@
-#include "DownloadCommand.hpp"
+#include "DownloadCommand.h"
 
 DownloadCommand::DownloadCommand(DefaultIO* thisIO) {
     m_dio = thisIO;

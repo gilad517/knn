@@ -1,5 +1,6 @@
+#pragma once
 #include <iostream>
-#include "DefaultIO.hpp"
+#include "DefaultIO.h"
 using namespace std;
 
 class StandardIO : public DefaultIO{
