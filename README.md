@@ -6,9 +6,8 @@ as local variables at both udp and tcp servers, compile and run both servers(see
 compile and run the client program(see "compiling and running").
 
 compiling and running: to compile either use the CMakeLists.txt file we provided or enter the following lines to the terminal:  
-g++ TcpServer.cpp Classifier.cpp Data.cpp -o TcpServer.out Classifier.cpp Data.cpp
+g++ CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp -o CLI.out
 
-g++ Client.cpp -o Client.out  
 when using our provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):  
 ./TcpServer  
 ./Client  
