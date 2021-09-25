@@ -1,6 +1,5 @@
 #pragma once
-#include <string.h>
-using namespace std;
+#include <string>
 
 class DefaultIO {
     public:

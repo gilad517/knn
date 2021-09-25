@@ -3,6 +3,6 @@
 using namespace std;
 
 class StandardIO : public DefaultIO{
-    string read(); 
+    string read();
     void write(string msg);
 };

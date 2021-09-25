@@ -18,7 +18,7 @@ bool isInt(string str) {
 
 class CLI {
     static const int OPTIONNUM = 7;
-    void start() {
+    int main() {
         DefaultIO *dio;
         StandardIO sio;
         dio = &sio;
@@ -43,7 +43,7 @@ class CLI {
         bool shouldContinue = true;
         do
         {
-            dio->write(getMenuStr(menu));
+            dio->write(this->getMenuStr(menu));
             string userChose(dio->read());
             if(isInt(userChose)&&(stoi(userChose)>0)&&(stoi(userChose)<OPTIONNUM))
             {
@@ -57,7 +57,8 @@ class CLI {
                 dio->write("Invalid input.");
             }
         } while (shouldContinue);
-        endCLI();
+        this->endCLI();
+        return 0;
     }
     string getMenuStr(Command** menu) {
         string toReturn = "Welcome to the KNN Classifier Server. Please choose an option:";
@@ -66,6 +67,7 @@ class CLI {
             toReturn+="\n" + to_string(i+1) + ". " + menu[i]->getDescription();
         }
         toReturn+="\n" + to_string(OPTIONNUM) + ". exit";
+        return toReturn;
     }
     void endCLI() {
 

@@ -1,15 +1,14 @@
 #include <iostream>
-#include "DefaultIO.hpp"
+#include "StandardIO.hpp"
 using namespace std;
 
-class StandardIO : public DefaultIO{
-    string read() {
-        string msg;
-        cin>>msg;
-        return msg;
-    }
-    
-    void write(string msg){
-        cout<<msg<<endl;
-    }
-};
+
+string StandardIO::read() {
+    string msg;
+    cin>>msg;
+    return msg;
+}
+
+void StandardIO::write(string msg) {
+    cout<<msg<<endl;
+}
