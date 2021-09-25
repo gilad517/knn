@@ -18,7 +18,7 @@ using namespace std;
 int main() {
 
     //The path to your classified Iris file, please make sure it is up to date before running the server.
-    const string classifiedPath = "/home/ori777/knn/files/classified.csv";
+    const string classifiedPath = "/home/gilad517/knn/knn/files/classified.csv";
     //Using port number 4444 and k=5 as agreed upon in the assignment.
     const int server_port = 4444;
     int k(5);
@@ -68,8 +68,11 @@ int main() {
                 Classifier cls(classifiedPath);
                 int spacePlace(stringMsg.find(' '));
                 string unclassified(stringMsg.substr(0,spacePlace)), output(stringMsg.substr(spacePlace+1, stringMsg.length()));
-                cls.Classify(unclassified, output,k);
+                cls.Classify(unclassified);
+                cout << cls.downloadResults(output);
+                cout << cls.displayResults();
                 cout<<"classified successfully"<<endl;
+                break;
             }
         }
         if (listenReturned < 0) {
