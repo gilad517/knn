@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "Classifier.h"
+#include "SocketIO.h"
 
 using namespace std;
 
@@ -51,29 +52,14 @@ int main() {
                 perror("error accepting client");
             }
 
-            //Receiving request from client and handeling it.
-            char buffer[4096];
-            int expected_data_len = sizeof(buffer);
-            int read_bytes = recv(client_sock, buffer, expected_data_len, 0);
-            if (read_bytes == 0) {
-                // connection is closed
-                continue;
-            }
-            else if (read_bytes < 0) {
-                perror("error receiving from client");
-            }
-            else {
-                //Classifing the unclassified file to the wanted output file.
-                string stringMsg(buffer);
-                Classifier cls(classifiedPath);
-                int spacePlace(stringMsg.find(' '));
-                string unclassified(stringMsg.substr(0,spacePlace)), output(stringMsg.substr(spacePlace+1, stringMsg.length()));
-                //cls.Classify(unclassified);
-                cout << cls.downloadResults(output);
-                cout << cls.displayResults();
-                cout<<"classified successfully"<<endl;
-                break;
-            }
+
+            SocketIO server(client_sock);
+            string sent(server.read());
+            cout<<"sent us: "<<sent<<endl;
+            string msg;
+            cout<<"enter message: \n";
+            getline(cin, msg);
+            server.write(msg);
         }
         if (listenReturned < 0) {
             perror("error listening to a socket");
