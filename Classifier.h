@@ -57,7 +57,6 @@ public:
 	~Classifier();
 	void initialize(string classifiedPath);
 	void addTest(string testPath);
-	void Classify(string unClassifiedPath);
 	void setK(int k);
 	void setMetric(DistanceMetric metric);
 	int getK();
