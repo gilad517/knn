@@ -5,8 +5,35 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include "SocketIO.h"
 
 using namespace std;
+
+struct Args{
+    DefaultIO* dio;
+    bool* isRunning;
+};
+
+void* Read(void* argsptr) {
+    Args* args = (Args*)(argsptr);
+    while(*(args->isRunning)) {
+        string recv = args->dio->read();
+        if(recv.compare("terminate")==0){
+            *(args->isRunning) = false;
+        }
+    }
+    return nullptr;
+}
+
+void* Write(void* argsptr) {
+    Args* args = (Args*)(argsptr);
+    while(*(args->isRunning)) {
+        string send;
+        getline(cin, send);
+        args->dio->write(send);
+    }
+    return nullptr;
+}
 
 /// <summary>
 /// The main method is used by the user to classify an unclassified Iris file.
@@ -19,7 +46,7 @@ using namespace std;
 int main() {
     //The ip adress of this machine(the local machine is always 127.0.0.1 ip).
     const char* ip_address = "127.0.0.1";
-    //Using port number 5454 for udp and 4444 for tcp.
+    //Using port number 4444 for tcp.
     const int tcp_port_no = 4444;
 
     struct sockaddr_in sin;
@@ -42,31 +69,25 @@ int main() {
         return 1;
     }
 
-    cout << "tcp server status: " << "ready" << endl;
-
+    bool isRunning = true;
+    SocketIO sio(tcp_sock);
+    Args args;
+    args.dio = &sio;
+    args.isRunning = &isRunning;
+    pthread_t ClientWrite;
+    pthread_attr_t attrOfClientWrite;
+    pthread_attr_init(&attrOfClientWrite);
+    pthread_create(&ClientWrite, &attrOfClientWrite, Write, &args);
     
-    //Receiving the user input and sending the wanted message to the wanted server.
-    string protocol, unClassifiedPath, outputPath;
-    cout<<"enter protocol, unclassified path, output path: ";
-    cin>>protocol>>unClassifiedPath>>outputPath;
-    string stringDataToSend = unClassifiedPath + " " + outputPath;
-    char* dataToSend(&stringDataToSend[0]);
-    int dataLen = strlen(dataToSend);
-    while (true) {
-        if (protocol.compare("TCP") == 0) {
-            int sent_bytes = send(tcp_sock, dataToSend, dataLen, 0);
-            if (sent_bytes < 0) {
-                perror("error writing to tcp server");
-                return 1;
-            }
-            break;
-        } else {
-            cout<<"invalid protocol, please enter TCP/UDP"<<endl;
-        }
-        cin>>protocol;
-    }
+    pthread_t ClientRead;
+    pthread_attr_t attrOfClientRead;
+    pthread_attr_init(&attrOfClientRead);
+    pthread_create(&ClientRead, &attrOfClientRead, Read, &args);
 
-    //Closing the server sockets.
+    void* re;
+    pthread_join(ClientRead,&re);
+    pthread_join(ClientWrite,&re);
+
     close(tcp_sock);
     return 0;
 }

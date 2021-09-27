@@ -8,19 +8,17 @@
 #include "QueueToSocketIO.h"
 #include <pthread.h>
 #include <stdlib.h>
-#include "CLI.cpp"
+#include "CLI.h"
 #include <queue>
 #include "SocketToQueue.h"
 
 using namespace std;
 
-template<typename T>
-void* readFromClient(void* vio) {
-    DefaultIO* dio;
-    dio = dynamic_cast<T*>(vio);
-    while (true) {
-        string data = dio->read();
-        dio->write(data);
+void* readFromClient(void* argsptr) {
+    Arguments* args = (Arguments*)(argsptr);
+    while (*(args->isRunning)) {
+        string data = args->dio->read();
+        args->dio->write(data);
     }
 }
 
@@ -63,17 +61,24 @@ int main() {
             }
             queue<string> q;
             SocketToQueue stq(client_sock, &q);
+            bool running=true;
+            Arguments argsSocketToQueue;
+            argsSocketToQueue.isRunning = &running;
+            argsSocketToQueue.dio = &stq;
             QueueToSocketIO qts(client_sock, &q);
+            Arguments argsQueueToSocket;
+            argsQueueToSocket.isRunning = &running;
+            argsQueueToSocket.dio = &qts;
 
             pthread_t tidOfRead;
             pthread_attr_t attrOfRead;
             pthread_attr_init(&attrOfRead);
-            pthread_create(&tidOfRead, &attrOfRead, readFromClient<SocketToQueue>, &stq);
+            pthread_create(&tidOfRead, &attrOfRead, readFromClient, &argsSocketToQueue);
             
             pthread_t tid;
             pthread_attr_t attr;
             pthread_attr_init(&attr);
-            pthread_create(&tid, &attr, CLI::start<QueueToSocketIO>, &qts);
+            pthread_create(&tid, &attr, CLI::start, &argsQueueToSocket);
         }
         if (listenReturned < 0) {
             perror("error listening to a socket");

@@ -11,5 +11,6 @@ void DownloadCommand::execute() {
 }
 
 void* DownloadCommand::executeInThread(void* par) {
-    this->execute();
+    DownloadCommand* dwncmd = (DownloadCommand*)(par);
+    dwncmd->execute();
 }
