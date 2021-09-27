@@ -7,4 +7,5 @@ class DownloadCommand : public Command{
     public:
         void execute();
         DownloadCommand(DefaultIO* thisIO);
+        void* executeInThread(void* par);
 };

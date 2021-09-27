@@ -6,6 +6,7 @@
 #include "Commands/UploadCommand.h"
 #include "DefaultIO.h"
 #include "StandardIO.h"
+#include <pthread.h>
 using namespace std;
 
 class CLI {
@@ -28,8 +29,12 @@ class CLI {
             toReturn+="\n" + to_string(OPTIONNUM) + ". exit";
             return toReturn;
         }
+
     public:
-        static void start(DefaultIO *dio) {
+        template<typename T>
+        static void* start(void *vio) {
+            DefaultIO* dio;
+            dio = dynamic_cast<T*>(vio);
             Classifier clf;
             Command** menu = new Command*[6];
             UploadCommand uploadCommand(dio);
@@ -55,7 +60,16 @@ class CLI {
                 string userChose(dio->read());
                 if(isInt(userChose)&&(stoi(userChose)>0)&&(stoi(userChose)<OPTIONNUM))
                 {
-                    menu[stoi(userChose) - 1]->execute();
+                    if (userChose.compare("5")) {
+                        pthread_t tid;
+                        pthread_attr_t attr;
+                        pthread_attr_init(&attr);
+                        DownloadCommand* dc;
+                        dc = dynamic_cast<DownloadCommand*>(menu[4]);
+                        pthread_create(&tid, &attr, dc->executeInThread() , NULL);
+                    } else {
+                        menu[stoi(userChose) - 1]->execute();
+                    }
                 }
                 else if (isInt(userChose)&&(stoi(userChose)==OPTIONNUM))
                 {
@@ -65,10 +79,7 @@ class CLI {
                     dio->write("Invalid input.");
                 }
             } while (shouldContinue);
+            dio->write("terminate");
+            pthread_exit(0);
         }
 };
-
-int main(){
-    StandardIO sio;
-    CLI::start(&sio);
-}

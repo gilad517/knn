@@ -9,3 +9,7 @@ void DownloadCommand::execute() {
     string downloadPath(m_dio->read());
     m_thisClassifier->downloadResults(downloadPath);
 }
+
+void* DownloadCommand::executeInThread(void* par) {
+    this->execute();
+}
