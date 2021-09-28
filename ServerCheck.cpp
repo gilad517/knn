@@ -14,14 +14,6 @@
 
 using namespace std;
 
-void* readFromClient(void* argsptr) {
-    Arguments* args = (Arguments*)(argsptr);
-    while (*(args->isRunning)) {
-        string data = args->dio->read();
-        args->dio->write(data);
-    }
-}
-
 /// <summary>
 /// The main method of the tcp server is used to establish the server and handeling client requests.
 /// It first creates a new server socket and then searches for any client requests.
@@ -59,26 +51,11 @@ int main() {
             if (client_sock < 0) {
                 perror("error accepting client");
             }
-            queue<string> q;
-            SocketToQueue stq(client_sock, &q);
-            bool running=true;
-            Arguments argsSocketToQueue;
-            argsSocketToQueue.isRunning = &running;
-            argsSocketToQueue.dio = &stq;
-            QueueToSocketIO qts(client_sock, &q);
-            Arguments argsQueueToSocket;
-            argsQueueToSocket.isRunning = &running;
-            argsQueueToSocket.dio = &qts;
-
-            pthread_t tidOfRead;
-            pthread_attr_t attrOfRead;
-            pthread_attr_init(&attrOfRead);
-            pthread_create(&tidOfRead, &attrOfRead, readFromClient, &argsSocketToQueue);
             
-            pthread_t tid;
-            pthread_attr_t attr;
-            pthread_attr_init(&attr);
-            pthread_create(&tid, &attr, CLI::start, &argsQueueToSocket);
+            SocketIO sio(client_sock);
+            sio.write("0000");
+            string msg(sio.read());
+            cout<<msg<<endl;
         }
         if (listenReturned < 0) {
             perror("error listening to a socket");

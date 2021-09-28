@@ -16,7 +16,7 @@ string SocketIO::read() {
     char buffer[65536]="";
     int expected_data_len = sizeof(buffer);
     int read_bytes = recv(m_clientSock, buffer, expected_data_len, 0);
-    if(read_bytes>0)
+    if(read_bytes>=0)
     {
         string received(buffer);
         return received;

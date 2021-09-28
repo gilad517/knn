@@ -43,6 +43,7 @@ void* CLI::start(void *argsptr) {
     do
     {
         dio->write(getMenuStr(menu));
+        //dio->write("Menu");
         string userChose(dio->read());
         if(isInt(userChose)&&(stoi(userChose)>0)&&(stoi(userChose)<OPTIONNUM))
         {
@@ -53,6 +54,7 @@ void* CLI::start(void *argsptr) {
                 DownloadCommand* dc;
                 dc = (DownloadCommand*)(menu[4]);
                 pthread_create(&tid, &attr, DownloadCommand::executeInThread , dc);
+                dio->write("pass");
             } else {
                 menu[stoi(userChose) - 1]->execute();
             }
