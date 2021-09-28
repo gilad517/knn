@@ -6,7 +6,7 @@ as local variables at both udp and tcp servers, compile and run both servers(see
 compile and run the client program(see "compiling and running").
 
 compiling and running: to compile either use the CMakeLists.txt file we provided or enter the following lines to the terminal:  
-g++ ServerTry.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketToQueue.cpp QueueToSocketIO.cpp SocketIO.cpp -lpthread -o Server.out
+g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out
 
 g++ ClientTry.cpp SocketIO.cpp StandardIO.cpp DefaultIO.h  -o Client.out
 
