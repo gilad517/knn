@@ -7,9 +7,11 @@ PrintingCommand::PrintingCommand(DefaultIO* thisIO) {
 }
 void PrintingCommand::execute() {
     m_dio->write(m_thisClassifier->displayResults());
+    this_thread::sleep_for(chrono::milliseconds(100));
     string emptyLine;
     do
     {
+        m_dio->write("please enter a message");
         emptyLine = m_dio->read();
     } while (!emptyLine.empty());
 }

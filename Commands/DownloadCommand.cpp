@@ -6,11 +6,10 @@ DownloadCommand::DownloadCommand(DefaultIO* thisIO) {
     m_thisClassifier = nullptr;
 }
 void DownloadCommand::execute() {
+    m_dio->write("please enter a message");
     string downloadPath(m_dio->read());
     m_thisClassifier->downloadResults(downloadPath);
 }
-
-void* DownloadCommand::executeInThread(void* par) {
-    DownloadCommand* dwncmd = (DownloadCommand*)(par);
-    dwncmd->execute();
+void DownloadCommand::activate(Command* ptr){
+    ptr->execute();
 }

@@ -29,6 +29,8 @@ void SettingsCommand::execute() {
     bool isValid = true;
     do
     {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        m_dio->write("please enter a message");
         string input(m_dio->read());
         if(input.empty()) {
             return;

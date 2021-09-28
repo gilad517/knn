@@ -26,7 +26,7 @@ string SocketIO::read() {
 
 void SocketIO::write(string msg) {
     char buffer[65536]="";
-    int expected_data_len = msg.length()*sizeof(char);
+    int expected_data_len = msg.length()*sizeof(char)?msg.length()*sizeof(char):1;
     strcpy(buffer, msg.c_str());
     int sent_bytes = send(m_clientSock, buffer, expected_data_len, 0);
 }

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "SocketIO.h"
+#include "StandardIO.h"
 
 using namespace std;
 
@@ -69,25 +70,23 @@ int main() {
         return 1;
     }
 
-    bool isRunning = true;
-    SocketIO sio(tcp_sock);
-    Args args;
-    args.dio = &sio;
-    args.isRunning = &isRunning;
-    pthread_t ClientWrite;
-    pthread_attr_t attrOfClientWrite;
-    pthread_attr_init(&attrOfClientWrite);
-    pthread_create(&ClientWrite, &attrOfClientWrite, Write, &args);
+    SocketIO client(tcp_sock);
+    DefaultIO* dio;
+    StandardIO sio;
+    dio = &sio;
+    string msg;
+    do
+    {
+        msg=client.read();
+        if((msg.compare("please enter a message") == 0)) {
+            client.write(dio->read());
+        } else if (msg.compare("terminate") != 0) {
+            dio->write(msg);
+        }
+    } while (msg.compare("terminate")!=0);
     
-    pthread_t ClientRead;
-    pthread_attr_t attrOfClientRead;
-    pthread_attr_init(&attrOfClientRead);
-    pthread_create(&ClientRead, &attrOfClientRead, Read, &args);
 
-    void* re;
-    pthread_join(ClientRead,&re);
-    pthread_join(ClientWrite,&re);
 
-    close(tcp_sock);
+    delete &client;
     return 0;
 }

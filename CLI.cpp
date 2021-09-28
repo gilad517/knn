@@ -18,9 +18,7 @@ string CLI::getMenuStr(Command** menu) {
     return toReturn;
 }
 
-void* CLI::start(void *argsptr) {
-    Arguments* args = (Arguments*)(argsptr);
-    DefaultIO* dio = args->dio;
+void CLI::start(DefaultIO* dio) {
     Classifier clf;
     Command** menu = new Command*[6];
     UploadCommand uploadCommand(dio);
@@ -42,19 +40,16 @@ void* CLI::start(void *argsptr) {
     bool shouldContinue = true;
     do
     {
+        this_thread::sleep_for(chrono::milliseconds(100));
         dio->write(getMenuStr(menu));
-        //dio->write("Menu");
+        this_thread::sleep_for(chrono::milliseconds(100));
+        dio->write("please enter a message");
         string userChose(dio->read());
         if(isInt(userChose)&&(stoi(userChose)>0)&&(stoi(userChose)<OPTIONNUM))
         {
             if (userChose.compare("5")==0) {
-                pthread_t tid;
-                pthread_attr_t attr;
-                pthread_attr_init(&attr);
-                DownloadCommand* dc;
-                dc = (DownloadCommand*)(menu[4]);
-                pthread_create(&tid, &attr, DownloadCommand::executeInThread , dc);
-                dio->write("pass");
+                thread thrd(DownloadCommand::activate,menu[4]);
+                thrd.detach();
             } else {
                 menu[stoi(userChose) - 1]->execute();
             }
@@ -68,6 +63,4 @@ void* CLI::start(void *argsptr) {
         }
     } while (shouldContinue);
     dio->write("terminate");
-    *(args->isRunning)=false;
-    return nullptr;
 }

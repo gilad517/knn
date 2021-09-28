@@ -11,6 +11,10 @@ void ConfusionMatrixCommand::execute() {
     string emptyLine;
     do
     {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        m_dio->write("please enter a message");
+        cout<<"  ."<<emptyLine<<".1"<<endl;
         emptyLine = m_dio->read();
+        cout<<"  ."<<emptyLine<<".2"<<endl;
     } while (!emptyLine.empty());
 }

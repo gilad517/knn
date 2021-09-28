@@ -2,6 +2,8 @@
 #include <iostream>
 #include "../DefaultIO.h"
 #include "../Classifier.h"
+#include <chrono>
+#include <thread>
 using namespace std;
 
 class Command {

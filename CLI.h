@@ -6,7 +6,8 @@
 #include "Commands/UploadCommand.h"
 #include "DefaultIO.h"
 #include "StandardIO.h"
-#include <pthread.h>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 struct Arguments{
@@ -18,7 +19,6 @@ class CLI {
     private:
         static const int OPTIONNUM = 7;
         static string getMenuStr(Command** menu);
-
     public:
-        static void* start(void *argsptr);
+        static void start(DefaultIO* dio);
 };
