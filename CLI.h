@@ -10,15 +10,10 @@
 #include <thread>
 using namespace std;
 
-struct Arguments{
-    DefaultIO* dio;
-    bool* isRunning;
-};
-
 class CLI {
     private:
         static const int OPTIONNUM = 7;
         static string getMenuStr(Command** menu);
     public:
-        static void start(DefaultIO* dio);
+        static void start(DefaultIO* dio, int& curr_threads);
 };

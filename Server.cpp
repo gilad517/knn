@@ -9,12 +9,12 @@
 #include <thread>
 #include <stdlib.h>
 #include "CLI.h"
-#include <queue>
 #include "SocketIO.h"
-
+#include <time.h>
+#include <ctime>
 using namespace std;
 
-void readFromClient(int server_sock) {
+void acceptAndHandleClient(int server_sock, int& curr_threads) {
     //Accepting a client and saving its address.
     struct sockaddr_in client_sin;
     unsigned int addr_len = sizeof(client_sin);
@@ -27,7 +27,7 @@ void readFromClient(int server_sock) {
     DefaultIO* dio;
     SocketIO sio(client_sock);
     dio = &sio;
-    CLI::start(dio);
+    CLI::start(dio, curr_threads);
 }
 
 /// <summary>
@@ -36,43 +36,53 @@ void readFromClient(int server_sock) {
 /// Given a request, the server classifies the unclassified file to the wanted output
 /// file using the Classifier class, prints a "classified successfully" message, and keeps searching for more clients.
 /// </summary>
-int main() {
+void activateServer(int sock, clock_t& lastUserConnected, bool& shouldAccept, int& curr_threads) {
     //Using port number 4444 and k=5 as agreed upon in the assignment.
     const int server_port = 4444;
-
-    //Creating a server tcp socket.
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) {
-        perror("error creating socket");
-    }
-
     //Creating and initializing a sockaddr_in member for the server.
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = INADDR_ANY;
     sin.sin_port = htons(server_port);
-    
     //Searching for clients and binding them.
-    int bindingReturned;
-    while((bindingReturned = bind(sock, (struct sockaddr *) &sin, sizeof(sin))) >= 0) {
-        //Listening to requests and handeling them.
-        int listenReturned;
-        while((listenReturned = listen(sock, 5))>=0) {
-            thread thrd(readFromClient,sock);
-            thrd.detach();
-        }
-        if (listenReturned < 0) {
-            perror("error listening to a socket");
-        }
-    }
-    if (bindingReturned < 0) {
+    if (bind(sock, (struct sockaddr *) &sin, sizeof(sin)) < 0) { 
         perror("error binding socket");
     }
+    //Listening to requests and handeling them.
+    int listenReturned;
+    while(((listenReturned = listen(sock, 5)) >= 0) && shouldAccept) {
+        lastUserConnected = clock();
+        thread thrd(acceptAndHandleClient, sock, ref(curr_threads));
+        thrd.detach();
+    }
+    if (listenReturned < 0) {
+        perror("error listening to a socket");
+    }
+}
 
-    //Closing the server socket.
+int main(int argc, char const *argv[])
+{
+    //timeout variables
+    clock_t lastUserConnected;
+    bool shouldAccept = true;
+    int curr_threads = 0;
+    int secondOfTimeOut = 50;
+
+    //Creating a server tcp socket.
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("error creating socket");
+    }
+    lastUserConnected = clock();
+    thread server(activateServer, sock, ref(lastUserConnected),ref(shouldAccept), ref(curr_threads));
+    while (float(clock() - lastUserConnected)/CLOCKS_PER_SEC < secondOfTimeOut) {
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    } 
+    shouldAccept = false;
+    while (curr_threads) {
+        this_thread::sleep_for(chrono::milliseconds(1000));
+    }
     close(sock);
-
-
     return 0;
 }

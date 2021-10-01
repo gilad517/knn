@@ -18,7 +18,8 @@ string CLI::getMenuStr(Command** menu) {
     return toReturn;
 }
 
-void CLI::start(DefaultIO* dio) {
+void CLI::start(DefaultIO* dio, int& curr_threads) {
+    curr_threads++;
     Classifier clf;
     Command** menu = new Command*[6];
     UploadCommand uploadCommand(dio);
@@ -48,7 +49,9 @@ void CLI::start(DefaultIO* dio) {
         if(isInt(userChose)&&(stoi(userChose)>0)&&(stoi(userChose)<OPTIONNUM))
         {
             if (userChose.compare("5")==0) {
-                thread thrd(DownloadCommand::activate,menu[4]);
+                dio->write("please enter a message");
+                string downloadPath(dio->read());
+                thread thrd(DownloadCommand::activate, (DownloadCommand*)menu[4], ref(curr_threads), downloadPath);
                 thrd.detach();
             } else {
                 menu[stoi(userChose) - 1]->execute();
@@ -62,5 +65,6 @@ void CLI::start(DefaultIO* dio) {
             dio->write("Invalid input.");
         }
     } while (shouldContinue);
+    curr_threads--;
     dio->write("terminate");
 }

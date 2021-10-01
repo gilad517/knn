@@ -10,6 +10,12 @@ void DownloadCommand::execute() {
     string downloadPath(m_dio->read());
     m_thisClassifier->downloadResults(downloadPath);
 }
-void DownloadCommand::activate(Command* ptr){
-    ptr->execute();
+
+void DownloadCommand::execute(string downloadPath) {
+    m_thisClassifier->downloadResults(downloadPath);
+}
+void DownloadCommand::activate(DownloadCommand* ptr, int& curr_threads, string downloadPath) {
+    curr_threads++;
+    ptr->execute(downloadPath);
+    curr_threads--;
 }

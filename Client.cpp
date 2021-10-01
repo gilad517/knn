@@ -10,32 +10,6 @@
 
 using namespace std;
 
-struct Args{
-    DefaultIO* dio;
-    bool* isRunning;
-};
-
-void* Read(void* argsptr) {
-    Args* args = (Args*)(argsptr);
-    while(*(args->isRunning)) {
-        string recv = args->dio->read();
-        if(recv.compare("terminate")==0){
-            *(args->isRunning) = false;
-        }
-    }
-    return nullptr;
-}
-
-void* Write(void* argsptr) {
-    Args* args = (Args*)(argsptr);
-    while(*(args->isRunning)) {
-        string send;
-        getline(cin, send);
-        args->dio->write(send);
-    }
-    return nullptr;
-}
-
 /// <summary>
 /// The main method is used by the user to classify an unclassified Iris file.
 /// it first establishes and checks connection to both udp and tcp servers and then(if connected)
