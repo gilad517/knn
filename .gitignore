@@ -38,5 +38,7 @@ Debug/**
 #build files
 /build
 
+*.md
+
 #vscode files
 /.vscode
