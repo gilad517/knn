@@ -10,24 +10,35 @@
 #include <stdlib.h>
 #include "CLI.h"
 #include "SocketIO.h"
-#include <time.h>
-#include <ctime>
+#include <chrono>
+
+#define now() std::chrono::high_resolution_clock::now()
+#define duration(a) std::chrono::duration_cast<std::chrono::seconds>(a).count()
+
 using namespace std;
 
-void acceptAndHandleClient(int server_sock, int& curr_threads) {
+typedef std::chrono::high_resolution_clock::time_point Time;
+
+void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserConnected, bool& shouldAccept) {
     //Accepting a client and saving its address.
     struct sockaddr_in client_sin;
     unsigned int addr_len = sizeof(client_sin);
-    int client_sock = accept(server_sock, (struct sockaddr *) &client_sin,  &addr_len);
-    
-    if (client_sock < 0) {
-        perror("error accepting client");
-    }
+    if (shouldAccept) {
+        int client_sock = accept(server_sock, (struct sockaddr *) &client_sin,  &addr_len);
+        if (client_sock < 0) {
+            perror("error accepting client");
+        }
 
-    DefaultIO* dio;
-    SocketIO sio(client_sock);
-    dio = &sio;
-    CLI::start(dio, curr_threads);
+        DefaultIO* dio;
+        SocketIO sio(client_sock);
+        dio = &sio;
+        if (shouldAccept) {
+            lastUserConnected = now();
+            CLI::start(dio, ref(curr_threads));
+        } else {
+            dio->write("refuse connection");
+        }
+    }
 }
 
 /// <summary>
@@ -36,8 +47,8 @@ void acceptAndHandleClient(int server_sock, int& curr_threads) {
 /// Given a request, the server classifies the unclassified file to the wanted output
 /// file using the Classifier class, prints a "classified successfully" message, and keeps searching for more clients.
 /// </summary>
-void activateServer(int sock, clock_t& lastUserConnected, bool& shouldAccept, int& curr_threads) {
-    //Using port number 4444 and k=5 as agreed upon in the assignment.
+void activateServer(int sock, Time& lastUserConnected, bool& shouldAccept, int& curr_threads) {
+    //Using port number 4444.
     const int server_port = 4444;
     //Creating and initializing a sockaddr_in member for the server.
     struct sockaddr_in sin;
@@ -52,8 +63,7 @@ void activateServer(int sock, clock_t& lastUserConnected, bool& shouldAccept, in
     //Listening to requests and handeling them.
     int listenReturned;
     while(((listenReturned = listen(sock, 5)) >= 0) && shouldAccept) {
-        lastUserConnected = clock();
-        thread thrd(acceptAndHandleClient, sock, ref(curr_threads));
+        thread thrd(acceptAndHandleClient, sock, ref(curr_threads), ref(lastUserConnected), ref(shouldAccept));
         thrd.detach();
     }
     if (listenReturned < 0) {
@@ -64,22 +74,24 @@ void activateServer(int sock, clock_t& lastUserConnected, bool& shouldAccept, in
 int main(int argc, char const *argv[])
 {
     //timeout variables
-    clock_t lastUserConnected;
+    Time lastUserConnected;
     bool shouldAccept = true;
     int curr_threads = 0;
-    int secondOfTimeOut = 50;
+    int secondOfTimeOut = 10;
 
     //Creating a server tcp socket.
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         perror("error creating socket");
     }
-    lastUserConnected = clock();
+    lastUserConnected = now();
     thread server(activateServer, sock, ref(lastUserConnected),ref(shouldAccept), ref(curr_threads));
-    while (float(clock() - lastUserConnected)/CLOCKS_PER_SEC < secondOfTimeOut) {
-        this_thread::sleep_for(chrono::milliseconds(1000));
+    server.detach();
+    while (duration(now() - lastUserConnected) < secondOfTimeOut) {
+        this_thread::sleep_for(chrono::seconds(max<int>(secondOfTimeOut - duration(now() - lastUserConnected), 1)));
     } 
     shouldAccept = false;
+    cout << "no more connections" <<endl;
     while (curr_threads) {
         this_thread::sleep_for(chrono::milliseconds(1000));
     }

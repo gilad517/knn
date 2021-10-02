@@ -54,13 +54,13 @@ int main() {
         msg=client.read();
         if((msg.compare("please enter a message") == 0)) {
             client.write(dio->read());
+        } else if (msg.compare("refuse connection") == 0) {
+            dio->write("server refused connection");
+            break;
         } else if (msg.compare("terminate") != 0) {
             dio->write(msg);
         }
     } while (msg.compare("terminate")!=0);
     
-
-
-    delete &client;
     return 0;
 }
