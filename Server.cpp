@@ -11,6 +11,7 @@
 #include "CLI.h"
 #include "SocketIO.h"
 #include <chrono>
+#include <mutex>
 
 #define now() std::chrono::high_resolution_clock::now()
 #define duration(a) std::chrono::duration_cast<std::chrono::seconds>(a).count()
@@ -19,7 +20,7 @@ using namespace std;
 
 typedef std::chrono::high_resolution_clock::time_point Time;
 
-void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserConnected, bool& shouldAccept) {
+void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserConnected, bool& shouldAccept, pthread_mutex_t& muLock) {
     //Accepting a client and saving its address.
     struct sockaddr_in client_sin;
     unsigned int addr_len = sizeof(client_sin);
@@ -28,6 +29,7 @@ void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserCon
         if (client_sock < 0) {
             perror("error accepting client");
         }
+        pthread_mutex_unlock(&muLock);
 
         DefaultIO* dio;
         SocketIO sio(client_sock);
@@ -62,13 +64,20 @@ void activateServer(int sock, Time& lastUserConnected, bool& shouldAccept, int& 
     }
     //Listening to requests and handeling them.
     int listenReturned;
+    pthread_mutex_t muLock;
+    if (pthread_mutex_init(&muLock, NULL) != 0)
+    {
+        perror("error creating mutex");
+    }
     while(((listenReturned = listen(sock, 5)) >= 0) && shouldAccept) {
-        thread thrd(acceptAndHandleClient, sock, ref(curr_threads), ref(lastUserConnected), ref(shouldAccept));
+        pthread_mutex_lock(&muLock);
+        thread thrd(acceptAndHandleClient, sock, ref(curr_threads), ref(lastUserConnected), ref(shouldAccept), ref(muLock));
         thrd.detach();
     }
     if (listenReturned < 0) {
         perror("error listening to a socket");
     }
+    pthread_mutex_destroy(&muLock);
 }
 
 int main(int argc, char const *argv[])
@@ -77,7 +86,7 @@ int main(int argc, char const *argv[])
     Time lastUserConnected;
     bool shouldAccept = true;
     int curr_threads = 0;
-    int secondOfTimeOut = 10;
+    int secondOfTimeOut = 20;
 
     //Creating a server tcp socket.
     int sock = socket(AF_INET, SOCK_STREAM, 0);
