@@ -86,7 +86,7 @@ int main(int argc, char const *argv[])
     Time lastUserConnected;
     bool shouldAccept = true;
     int curr_threads = 0;
-    int secondOfTimeOut = 20;
+    int secondOfTimeOut = 30;
 
     //Creating a server tcp socket.
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -100,7 +100,7 @@ int main(int argc, char const *argv[])
         this_thread::sleep_for(chrono::seconds(max<int>(secondOfTimeOut - duration(now() - lastUserConnected), 1)));
     } 
     shouldAccept = false;
-    cout << "no more connections" <<endl;
+    cout << "no more connections - server time out" <<endl;
     while (curr_threads) {
         this_thread::sleep_for(chrono::milliseconds(1000));
     }
