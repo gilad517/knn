@@ -14,10 +14,10 @@ cd build
 cmake ..  
 cmake --build .  
 
-and then to run the server from the build dir enter the command:
-./Server
-and to run the client from the build dir enter the command:
-./Client
+and then to run the server from the build dir enter the command:  
+./Server  
+and to run the client from the build dir enter the command:  
+./Client  
 
 compiling from terminal:  
 enter the following lines to the terminal:  
