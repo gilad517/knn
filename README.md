@@ -1,37 +1,35 @@
 # knn, server client
 k nearest neighbors, server client.  
 
-to run the program insert the wanted paths of the classified file  
-as local variables at both udp and tcp servers, compile and run both servers(see "compiling and running").  
+to run the program insert the wanted timeout (in seconds) to the local variable in Server.cpp file, line 89.  
+compile and run the server(see "compiling and running").  
 compile and run the client program(see "compiling and running").
 
-compiling and running: to compile either use the CMakeLists.txt file we provided or enter the following lines to the terminal:  
+compiling and running: to compile either enter the following lines to the terminal:
+
 g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out
 
 g++ Client.cpp SocketIO.cpp StandardIO.cpp DefaultIO.h  -o Client.out
 
-when using our provided CMakeLists.txt file, use these commands to run(in that order, each in a different terminal - use split, and have your working directory be "build"):  
-./TcpServer  
-./Client  
-otherwise, use these commands to run(in that order, each in a different terminal - use split):  
-./TcpServer.out  
-./UdpServer.out  
-./Client.out  
+
+use these commands to run(in that order, each in a different terminal - use split):  
+./Server.out  
+./Client.out
+
+to run multiple clients add another terminal and run the client again (./Client.out)
 
 Splitting the terminal can either be achieved by a terminal multiplexer or in VsCode using the + on the top right of the terminal window.
 
-The classes in the program are: Iris class which represents the Iris with all it's properties
-and helpful functions, the classifier class which classifies the unclassified Iris file, gets the classified file path in the constructor
-and the unclassified and output file paths plus the k (from the knn) in the classify function which classifies the unclassified file
-to the output file according to the given k.  
-The udp and tcp servers get a query from the client (in udp or tcp protocol) and classify the given unclassified file to the given output file,
-the client receives from the user an input of protocol(TCP or UDP), and then the paths of the unclassified file to classify and the output file,
-it then sends a request to one of the servers (depending on the given protocol) to classify the unclassified file to the output file.
 
-We implemented the assignment by first connecting the client to the tcp server, and sending a message to the udp server (we wanted it to have the client's adress
-for us to get connection approvel) and after making sure the servers are up(by connecting to the tcp server and getting a message from the udp server),
-read the input from user (cin>>), then, according to the given protocol, we sent a query for the corresponding server
-to classify the unclassified file we got from the user to the output file the user inserted using the classifier class from milestone 1,
-and finally(after classifying the wanted file and after the server printed "classified successfully"),
-we closed both sockets on the client side(each was meant to sent a query to its server).  
-Both servers still remain, patiently waiting for their next client.
+
+The classes in the program are: 
+Data class which represents the Data to classify with all it's properties
+and helpful functions, the classifier class which can do the wanted commands (classify, download results, get the confusion matrix...).
+the commands interface which saves classifier as member (to execute the commands), execute function and description.
+the commands (upload command for example) which implements the commands interface and the execute and description function according to the class name.
+Default IO interface with read and write commands.
+socket IO implements the Default IO interface and write and read from client socket.
+CLI class with start function that accepts Default IO as parameter, creates an array of commands (according to the input that execute each function) and read input from user
+and execute the wanted function, when execute the "download results" function, the execution of the function will happen in a different thread, for the client not to wait while this (maybe long) function runs.
+Client that communicate with the server, only reads and writes to him in a loop (until the server ends the communication)
+The server, waits for clients in a thread, while in the main thread, he checks if he should time out (using high resolution clock) and stop accepting clients. When he accepts a client, the server creates another thread to handle the client (create socket io with him and run the start() function) to let other clients connect, and let the main thread know that the last client connected now (using referance to the high resolution clock variable in the main thread). When the last client connected more than the wanted timeout seconds ago (currently 30) the server does not accepts any more clients (using referance to a boolean variable "should accept") and enter an infinite loop until there are no more running threads (using shared (by referance) int that counts the number of running threads), after that the server shutdown.
