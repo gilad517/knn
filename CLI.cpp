@@ -38,6 +38,7 @@ void CLI::start(DefaultIO *dio, int &curr_threads)
     menu[3] = &printingCommand;
     menu[4] = &downloadCommand;
     menu[5] = &confusionMatrixCommand;
+    bool entered1(false), entered3(false);
     for (size_t i = 0; i < OPTIONNUM - 1; i++)
     {
         menu[i]->setClassifier(&clf);
@@ -52,6 +53,20 @@ void CLI::start(DefaultIO *dio, int &curr_threads)
         string userChose(dio->read());
         if (isInt(userChose) && (stoi(userChose) > 0) && (stoi(userChose) < OPTIONNUM))
         {
+            if((stoi(userChose)>=3) && (stoi(userChose)<=6) && !entered1) {
+                dio->write("please input test and train files first");
+                continue;
+            }
+            if((stoi(userChose)>=4) && (stoi(userChose)<=6) && !entered3) {
+                dio->write("please classify files first");
+                continue;
+            }
+            if(stoi(userChose) == 1){
+                entered1 = true;
+            }
+            if(stoi(userChose) == 3){
+                entered3 = true;
+            }
             if (userChose.compare("5") == 0)
             {
                 dio->write("please enter a message");
