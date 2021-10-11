@@ -8,12 +8,17 @@ compile and run the client program(see "compiling and running").
 compiling and running: to compile either use our provided CmakeLists.txt file or compile from terminal:
 
 CmakeLists.txt file:
+
 while on the root dir(knn) make sure the build dir is empty(for example use: "rm -r build" and then "mkdir build")
+
 and then while on the root dir enterthe following commands(may take some time):
-cmake .
+
 cd build
+
+cmake ..
+
 cmake --build .
-to run the server enter the command:  
+
 and then to run the server from the build dir enter the command:
 ./Server
 and to run the client from the build dir enter the command:
