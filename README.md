@@ -21,8 +21,8 @@ and to run the client from the build dir enter the command:
 
 compiling from terminal:  
 enter the following lines to the terminal:  
-g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out  
-g++ Client.cpp SocketIO.cpp StandardIO.cpp DefaultIO.h  -o Client.out
+g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out  
+g++ Client.cpp SocketIO.cpp StandardIO.cpp -o Client.out
 
 to run the server enter the command:  
 ./Server.out  
