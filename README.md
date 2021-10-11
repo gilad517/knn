@@ -5,18 +5,31 @@ to run the program insert the wanted timeout (in seconds) to the local variable 
 compile and run the server(see "compiling and running").  
 compile and run the client program(see "compiling and running").
 
-compiling and running: to compile either enter the following lines to the terminal:
+compiling and running: to compile either use our provided CmakeLists.txt file or compile from terminal:
 
-g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out
+CmakeLists.txt file:  
+while on the root dir(knn) make sure the build dir is empty(for example use: "rm -r build" and then "mkdir build")  
+and then while on the root dir enterthe following commands(may take some time):  
+cd build  
+cmake ..  
+cmake --build .  
 
+and then to run the server from the build dir enter the command:  
+./Server  
+and to run the client from the build dir enter the command:  
+./Client  
+
+compiling from terminal:  
+enter the following lines to the terminal:  
+g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out  
 g++ Client.cpp SocketIO.cpp StandardIO.cpp DefaultIO.h  -o Client.out
 
-
-use these commands to run(in that order, each in a different terminal - use split):  
+to run the server enter the command:  
 ./Server.out  
-./Client.out
+and to run the client enter the command:  
+./Client.out  
 
-to run multiple clients add another terminal and run the client again (./Client.out)
+to run multiple clients add another terminal and run the client again (./Client.out or ./Client)
 
 Splitting the terminal can either be achieved by a terminal multiplexer or in VsCode using the + on the top right of the terminal window.
 
