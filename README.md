@@ -7,33 +7,27 @@ compile and run the client program(see "compiling and running").
 
 compiling and running: to compile either use our provided CmakeLists.txt file or compile from terminal:
 
-CmakeLists.txt file:
-
-while on the root dir(knn) make sure the build dir is empty(for example use: "rm -r build" and then "mkdir build")
-
-and then while on the root dir enterthe following commands(may take some time):
-
-cd build
-
-cmake ..
-
-cmake --build .
+CmakeLists.txt file:  
+while on the root dir(knn) make sure the build dir is empty(for example use: "rm -r build" and then "mkdir build")  
+and then while on the root dir enterthe following commands(may take some time):  
+cd build  
+cmake ..  
+cmake --build .  
 
 and then to run the server from the build dir enter the command:
 ./Server
 and to run the client from the build dir enter the command:
 ./Client
 
-compiling from terminal:
-enter the following lines to the terminal:
-g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out
-
+compiling from terminal:  
+enter the following lines to the terminal:  
+g++ Server.cpp CLI.cpp Commands/ClassifyingCommand.cpp Commands/ConfusionMatrixCommand.cpp Commands/DownloadCommand.cpp Commands/PrintingCommand.cpp Commands/SettingsCommand.cpp Commands/UploadCommand.cpp DefaultIO.h StandardIO.cpp Classifier.cpp Data.cpp SocketIO.cpp -lpthread -o Server.out  
 g++ Client.cpp SocketIO.cpp StandardIO.cpp DefaultIO.h  -o Client.out
 
 to run the server enter the command:  
 ./Server.out  
-and to run the client enter the command:
-./Client.out
+and to run the client enter the command:  
+./Client.out  
 
 to run multiple clients add another terminal and run the client again (./Client.out or ./Client)
 
