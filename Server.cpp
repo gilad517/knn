@@ -20,6 +20,15 @@ using namespace std;
 
 typedef std::chrono::high_resolution_clock::time_point Time;
 
+/**
+ * @brief A method to accept and handle a client.
+ * once a new client is detected the method calls the CLI::start method to continue the communication.
+ * @param server_sock The server socket
+ * @param curr_threads The number of threads currently working
+ * @param lastUserConnected The time of the last user connected
+ * @param shouldAccept Whether the server accepts new clients
+ * @param muLock The nutex that esures the search for connections happens in only one thread.
+ */
 void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserConnected, bool& shouldAccept, pthread_mutex_t& muLock) {
     //Accepting a client and saving its address.
     struct sockaddr_in client_sin;
@@ -43,12 +52,15 @@ void acceptAndHandleClient(int server_sock, int& curr_threads, Time& lastUserCon
     }
 }
 
-/// <summary>
-/// The main method of the tcp server is used to establish the server and handeling client requests.
-/// It first creates a new server socket and then searches for any client requests.
-/// Given a request, the server classifies the unclassified file to the wanted output
-/// file using the Classifier class, prints a "classified successfully" message, and keeps searching for more clients.
-/// </summary>
+/**
+ * @brief A method to activate the server and start searching for clients.
+ * whenever a new client connects the server makes a new thread to continue the search.
+ * doesn't make unnecessary threads by using mutexes.
+ * @param sock The server socket to activate
+ * @param lastUserConnected The time of the last user connected
+ * @param shouldAccept Whether the server accepts new clients
+ * @param curr_threads The number of threads currently working
+ */
 void activateServer(int sock, Time& lastUserConnected, bool& shouldAccept, int& curr_threads) {
     //Using port number 4444.
     const int server_port = 4444;
@@ -80,6 +92,13 @@ void activateServer(int sock, Time& lastUserConnected, bool& shouldAccept, int& 
     pthread_mutex_destroy(&muLock);
 }
 
+/**
+ * @brief The main server method - creates a new tcp socket and controlls the server timeout
+ * by making a separate thread for the server and managing it.
+ * @param argc The user arguments - unimportant
+ * @param argv The user arguments - unimportant
+ * @return int A generic numeric output to indicate errors
+ */
 int main(int argc, char const *argv[])
 {
     //timeout variables

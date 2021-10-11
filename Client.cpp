@@ -10,14 +10,11 @@
 
 using namespace std;
 
-/// <summary>
-/// The main method is used by the user to classify an unclassified Iris file.
-/// it first establishes and checks connection to both udp and tcp servers and then(if connected)
-/// asks the user to enter the server format of the user's choice, and then (after a space)
-/// the path to the unclassified Iris file, and then (after a space) the path to the output file.
-/// The wanted server should then classify the unclassified Iris file to the output file
-/// and print a "classified successfully" message.
-/// </summary>
+/**
+ * @brief The main method of the client 
+ * seeking an available server, and(if found) establishes connection and begins communication.
+ * @return int A generic numeric output to indicate errors
+ */
 int main() {
     //The ip adress of this machine(the local machine is always 127.0.0.1 ip).
     const char* ip_address = "127.0.0.1";

@@ -1,10 +1,13 @@
 #pragma once
 #include <string>
 #include <iostream>
-/// <summary>
-/// The Data class represents a simple Data.
-/// </summary>
+
+//The distance metrics available
 enum class DistanceMetric { EUC, MAN, CHE };
+/**
+ * @brief The Data class represents a simple Data.
+ * 
+ */
 class Data
 {
 private:
@@ -13,36 +16,48 @@ private:
 	//The Data's type
 	std::string m_type;
 public:
-	//The Data's constructors
+
+	/**
+	 * @brief Construct a new Data object using an array of properties
+	 * 
+	 * @param properties The data's properties
+	 */
 	Data(double properties[10]);
+
+	/**
+	 * @brief Construct a new Data object(defualt constructor)
+	 * 
+	 */
 	Data();
 
-	/// <summary>
-	/// A basic set method for the Data's attributes
-	/// </summary>
-	/// <param name="properties">
-	/// An array of the new Data properties (stem width, length and then petals width, length)
-	/// </param>
+	/**
+	 * @brief A basic set method for the Data's attributes
+	 * 
+	 * @param properties An array of the new Data properties
+	 */
 	void setProperties(double properties[10]);
 
-	/// <summary>
-	///  A basic set method for the Data's type attribute
-	/// </summary>
-	/// <param name="type">The new Data's type attribute</param>
+	/**
+	 * @brief A basic set method for the Data's type attribute
+	 * 
+	 * @param type The new Data's type attribute
+	 */
 	void setType(std::string type);
 
-	/// <summary>
-	/// A basic get method for the Data's type attribute
-	/// </summary>
-	/// <returns>The current Data's type attribute</returns>
+	/**
+	 * @brief A basic get method for the Data's type attribute
+	 * 
+	 * @return std::string The current Data's type attribute
+	 */
 	std::string getType();
 
-	/// <summary>
-	/// A method to determain the distance between two Datas.
-	/// We used the squared Euclidean length since it is parallel
-	/// to the regular Euclidean length.
-	/// </summary>
-	/// <param name="Data">The Data to which we culculate the distance(from this Data)</param>
-	/// <returns>The distance between this Data and the given one</returns>
+	/**
+	 * @brief A method to determain the distance between two Datas.
+	 * We used the squared Euclidean length since it is equivalent  to the regular Euclidean length.
+	 * We also implemented CHE and MAN distance metrics.
+	 * @param data The Data to which we culculate the distance(from this Data)
+	 * @param metric The distance metric by which the distance is calculated
+	 * @return double The distance between this Data and the given one
+	 */
 	double distanceFrom(Data data, DistanceMetric metric);
 };
